@@ -16,7 +16,7 @@ option (USE_SYSTEM_CERES
 
 
 
-option (USE_BUILT_OPENGV
+option (HAS_BUILD_OPENGV
         "Use opengv via find_package rather than downloading it as part of okvis" ON) 
 
 option (BUILD_APPS
@@ -215,7 +215,12 @@ endif()
 
 # OpenGV
 
-if(0)
+if(HAS_BUILD_OPENGV)
+
+SET(OpenGV_INCLUDE_DIRS $ENV{HOME}/software/okvis/3rdlib_install/include)
+SET(OpenGV_LIBRARIES $ENV{HOME}/software/okvis/3rdlib_install/lib/libopengv.a)
+else()
+
 set(CMAKE_CXX_FLAGS_WSUPPRESS 
       "${CMAKE_CXX_FLAGS} -Wno-unused-parameter -Wno-maybe-uninitialized -Wno-sign-compare -Wno-unused-but-set-variable -Wno-unused-variable -Wno-pedantic")
 message(STATUS "NOTE: Suppressing some warnings when compiling OpenGV.")
@@ -289,9 +294,6 @@ if(${BUILD_TESTS})
 endif()
 
 
-SET(OpenGV_INCLUDE_DIRS $ENV{HOME}/software/okvis/3rdlib_install/include)
-SET(OpenGV_LIBRARIES $ENV{HOME}/software/okvis/3rdlib_install/lib/libopengv.a)
-  
 
 # BUILD LOCAL DEPENDENCIES
 include_directories(okvis_util/include)
@@ -325,7 +327,12 @@ add_dependencies(okvis_matcher okvis_util)
 
 include_directories(okvis_frontend/include )
 add_subdirectory(okvis_frontend)
+if(HAS_BUILD_OPENGV)
 add_dependencies(okvis_frontend  okvis_util)
+else()
+add_dependencies(okvis_frontend opengv okvis_util)
+endif()
+
 
 include_directories(okvis_multisensor_processing/include)
 add_subdirectory(okvis_multisensor_processing)
