@@ -10,14 +10,20 @@ set(OKVIS_VERSION
 
 # options for build configuration
 option (USE_SYSTEM_BRISK
-        "Use brisk via find_package rather than downloading it as part of okvis" OFF) 
+        "Use brisk via find_package rather than downloading it as part of okvis" ON) 
 option (USE_SYSTEM_CERES
-        "Use ceres via find_package rather than downloading it as part of okvis" OFF) 
+        "Use ceres via find_package rather than downloading it as part of okvis" ON) 
+
+
+
+option (USE_BUILT_OPENGV
+        "Use opengv via find_package rather than downloading it as part of okvis" ON) 
+
 option (BUILD_APPS
         "Builds a demo app (which requires boost)" ON) 
 option (BUILD_TESTS
         "Builds all gtests" OFF) 
-SET(N_CORES 3 CACHE STRING "Using N number of cores for parallel build")
+SET(N_CORES 4 CACHE STRING "Using N number of cores for parallel build")
 
 # Offer the user the choice of overriding the installation directories
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
@@ -208,6 +214,8 @@ else()
 endif()
 
 # OpenGV
+
+if(0)
 set(CMAKE_CXX_FLAGS_WSUPPRESS 
       "${CMAKE_CXX_FLAGS} -Wno-unused-parameter -Wno-maybe-uninitialized -Wno-sign-compare -Wno-unused-but-set-variable -Wno-unused-variable -Wno-pedantic")
 message(STATUS "NOTE: Suppressing some warnings when compiling OpenGV.")
@@ -216,9 +224,9 @@ ExternalProject_Add(opengv_external
     GIT_TAG cc32b16281aa6eab67cb28a61cf87a2a5c2b0961
     UPDATE_COMMAND ""
     PATCH_COMMAND # forcing static libs
-        COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/cmake/opengv/CMakeLists.txt ${CMAKE_CURRENT_BINARY_DIR}/opengv/src/opengv/CMakeLists.txt
-        COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/cmake/opengv/opengvConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/opengv/src/opengv/opengvConfig.cmake.in
-        COMMENT "Forcing our own CMakeLists.txt to build OpenGV (static library support)."
+	COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/cmake/opengv/CMakeLists.txt ${CMAKE_CURRENT_BINARY_DIR}/opengv/src/opengv/CMakeLists.txt
+	COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/cmake/opengv/opengvConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/opengv/src/opengv/opengvConfig.cmake.in
+	COMMENT "Forcing our own CMakeLists.txt to build OpenGV (static library support)."
     CMAKE_ARGS 
       -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR> 
       -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE} 
@@ -230,6 +238,8 @@ ExternalProject_Add(opengv_external
     BUILD_COMMAND make -j${N_CORES}
     INSTALL_COMMAND make install
 )
+
+
 add_library(opengv STATIC IMPORTED)
 set(OpenGV_LIBRARIES opengv)
 set_target_properties(opengv PROPERTIES IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib/libopengv.a)
@@ -243,12 +253,16 @@ install(DIRECTORY ${CMAKE_BINARY_DIR}/include/opengv/
 install(DIRECTORY ${CMAKE_BINARY_DIR}/lib/CMake/opengv/
   DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/CMake/opengv/)
 
+
+endif()
+
 if(${BUILD_TESTS})
   # gmock
   # http://stackoverflow.com/questions/9689183/cmake-googletest
   ExternalProject_Add(
     googlemock
-    URL https://googlemock.googlecode.com/files/gmock-1.7.0.zip
+    #URL https://googlemock.googlecode.com/files/gmock-1.7.0.zip
+    GIT_REPOSITORY https://github.com/google/googletest
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gmock
     CMAKE_ARGS -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     BUILD_COMMAND make -j${N_CORES}
@@ -273,6 +287,11 @@ if(${BUILD_TESTS})
                   ${GTEST_LIBRARY_PATH})
   add_dependencies(${GTEST_LIBRARY} googlemock)
 endif()
+
+
+SET(OpenGV_INCLUDE_DIRS $ENV{HOME}/software/okvis/3rdlib_install/include)
+SET(OpenGV_LIBRARIES $ENV{HOME}/software/okvis/3rdlib_install/lib/libopengv.a)
+  
 
 # BUILD LOCAL DEPENDENCIES
 include_directories(okvis_util/include)
@@ -304,9 +323,9 @@ include_directories(okvis_matcher/include)
 add_subdirectory(okvis_matcher)
 add_dependencies(okvis_matcher okvis_util)
 
-include_directories(okvis_frontend/include)
+include_directories(okvis_frontend/include )
 add_subdirectory(okvis_frontend)
-add_dependencies(okvis_frontend opengv okvis_util)
+add_dependencies(okvis_frontend  okvis_util)
 
 include_directories(okvis_multisensor_processing/include)
 add_subdirectory(okvis_multisensor_processing)
