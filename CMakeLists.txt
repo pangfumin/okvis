@@ -23,6 +23,11 @@ option (BUILD_APPS
         "Builds a demo app (which requires boost)" ON) 
 option (BUILD_TESTS
         "Builds all gtests" OFF) 
+        
+option (BUILD_PLAIN_TESTS
+        "Builds all plain tests without gtest" ON) 
+        
+        
 SET(N_CORES 4 CACHE STRING "Using N number of cores for parallel build")
 
 # Offer the user the choice of overriding the installation directories
@@ -215,8 +220,7 @@ endif()
 
 # OpenGV
 
-if(HAS_BUILD_OPENGV)
-
+if(${HAS_BUILD_OPENGV})  # using absolute path
 SET(OpenGV_INCLUDE_DIRS $ENV{HOME}/software/okvis/3rdlib_install/include)
 SET(OpenGV_LIBRARIES $ENV{HOME}/software/okvis/3rdlib_install/lib/libopengv.a)
 else()
@@ -365,6 +369,30 @@ if(BUILD_APPS)
     EXPORT okvisTargets
     RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin)
 endif()
+
+
+if(${BUILD_PLAIN_TESTS})
+ # test ceres
+ add_executable(testEstimator_plain okvis_test/src/testEstimator_plain.cpp)
+ target_link_libraries(testEstimator_plain   okvis_ceres )
+ add_executable(testIMUerror_plain okvis_test/src/testIMUerror_plain.cpp)
+ target_link_libraries(testIMUerror_plain    okvis_ceres  )
+ add_executable(testHomogeneousPointError_plain okvis_test/src/testHomogeneousPointError_plain.cpp)
+ target_link_libraries(testHomogeneousPointError_plain    okvis_ceres  )   
+ add_executable(testReprojectionError_plain okvis_test/src/testReprojectionError_plain.cpp)
+ target_link_libraries(testReprojectionError_plain    okvis_ceres  )
+ add_executable(testMap_plain okvis_test/src/testMap_plain.cpp)
+ target_link_libraries(testMap_plain    okvis_ceres  )
+ add_executable(testMarginalization_plain okvis_test/src/testMarginalization_plain.cpp)
+ target_link_libraries(testMarginalization_plain    okvis_ceres  )
+ 
+ # test cv
+  add_executable(testFrame_plain okvis_test/src/testFrame_plain.cpp)
+ target_link_libraries(testFrame_plain    okvis_cv  )
+endif()
+
+
+
 
 # installation is invoked in the individual modules...
 export (TARGETS 

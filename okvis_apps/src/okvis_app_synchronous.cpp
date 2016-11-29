@@ -61,6 +61,8 @@
 
 #include <boost/filesystem.hpp>
 
+
+
 class PoseViewer
 {
  public:
@@ -72,10 +74,13 @@ class PoseViewer
     _image.create(imageSize, imageSize, CV_8UC3);
     drawing_ = false;
     showing_ = false;
+    std::string  strFile = "groundtruth.txt";
+    _of.open(strFile.c_str());
+    
   }
   // this we can register as a callback
   void publishFullStateAsCallback(
-      const okvis::Time & /*t*/, const okvis::kinematics::Transformation & T_WS,
+      const okvis::Time & t, const okvis::kinematics::Transformation & T_WS,
       const Eigen::Matrix<double, 9, 1> & speedAndBiases,
       const Eigen::Matrix<double, 3, 1> & /*omega_S*/)
   {
@@ -83,6 +88,13 @@ class PoseViewer
     // just append the path
     Eigen::Vector3d r = T_WS.r();
     Eigen::Matrix3d C = T_WS.C();
+    _of<< t <<" 0 "<<C(0,0)<<" "<<C(0,1)<<" "<<C(0,2)<<" "<<0<<" "
+                              <<C(1,0)<<" "<<C(1,1)<<" "<<C(1,2)<<" "<<0<<" "
+            <<C(2,0)<<" "<<C(2,1)<<" "<<C(2,2)<<" "<<0<<std::endl;
+    std::cout<<  t <<" 0 "<<C(0,0)<<" "<<C(0,1)<<" "<<C(0,2)<<" "<<0<<" "
+                              <<C(1,0)<<" "<<C(1,1)<<" "<<C(1,2)<<" "<<0<<" "
+            <<C(2,0)<<" "<<C(2,1)<<" "<<C(2,2)<<" "<<0<<std::endl;
+
     _path.push_back(cv::Point2d(r[0], r[1]));
     _heights.push_back(r[2]);
     // maintain scaling
@@ -142,6 +154,10 @@ class PoseViewer
 
     drawing_ = false; // notify
   }
+  ~PoseViewer()
+  {
+    _of.close();
+  }
   void display()
   {
     while (drawing_) {
@@ -193,6 +209,9 @@ class PoseViewer
   const double _frameScale = 0.2;  // [m]
   std::atomic_bool drawing_;
   std::atomic_bool showing_;
+
+  std::ofstream _of;
+
 };
 
 // this is just a workbench. most of the stuff here will go into the Frontend class.

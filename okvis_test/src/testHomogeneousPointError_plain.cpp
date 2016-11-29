@@ -45,7 +45,7 @@
 #include <okvis/FrameTypedefs.hpp>
 #include <okvis/assert_macros.hpp>
 
-TEST(okvisTestSuite, HomogeneousPointError) {
+void testHomogeneousPointError_plain() {
   // initialize random number generator
   //srand((unsigned int) time(0)); // disabled: make unit tests deterministic...
 
@@ -91,7 +91,9 @@ TEST(okvisTestSuite, HomogeneousPointError) {
   // Run the solver!
   map.options.minimizer_progress_to_stdout = false;
   std::cout << "run the solver... " << std::endl;
+  
   map.solve();
+
   std::cout<< " finished "<<std::endl;
 
   // print some infos about the optimization
@@ -102,4 +104,10 @@ TEST(okvisTestSuite, HomogeneousPointError) {
       Exception,
       map.summary.final_cost < 1.0e-10,
       "No convergence. this must converge to zero, since it is not an overdetermined system.");
+}
+
+int main()
+{
+  testHomogeneousPointError_plain();
+  return 0;
 }
