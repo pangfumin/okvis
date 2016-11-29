@@ -228,4 +228,4 @@ ignored. Please contact s.leutenegger@imperial.ac.uk.
 
 ### Modified  by pangfumin
 
-To avoiding re-downloading some thirdpart lib ,some hard code is add to CMakeLists.
+To avoiding re-downloading some thirdpart lib ,some hard code is add to CMakeLists.txt.

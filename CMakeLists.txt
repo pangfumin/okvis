@@ -342,6 +342,11 @@ include_directories(okvis_multisensor_processing/include)
 add_subdirectory(okvis_multisensor_processing)
 add_dependencies(okvis_multisensor_processing okvis_util)
 
+# add visualizer
+include_directories(okvis_visualizer/include)
+add_subdirectory(okvis_visualizer)
+add_dependencies(okvis_visualizer okvis_util)
+
 # also build the apps
 if(BUILD_APPS)
   FIND_PACKAGE(Boost COMPONENTS filesystem system REQUIRED)
@@ -368,6 +373,31 @@ if(BUILD_APPS)
     # IMPORTANT: Add the executable to the "export-set"
     EXPORT okvisTargets
     RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin)
+    
+  FIND_PACKAGE(Boost COMPONENTS filesystem system thread REQUIRED)
+  include_directories(${Boost_INCLUDE_DIRS})
+  # require Pangolin to visualization
+  find_package(Pangolin REQUIRED)
+  include_directories(${Pangolin_INCLUDE_DIRS})
+  add_executable(okvis_app_synchronous_pangolin okvis_apps/src/okvis_app_synchronous_pangolin.cpp)
+  target_link_libraries(okvis_app_synchronous_pangolin 
+    okvis_util
+    okvis_kinematics
+    okvis_time
+    okvis_cv 
+    okvis_common
+    okvis_ceres
+    okvis_timing
+    okvis_matcher
+    okvis_frontend 
+    okvis_multisensor_processing
+    okvis_visualizer
+    pthread 
+    ${Boost_LIBRARIES}
+    ${Pangolin_LIBRARIES}
+  )
+     
+
 endif()
 
 
@@ -388,7 +418,16 @@ if(${BUILD_PLAIN_TESTS})
  
  # test cv
   add_executable(testFrame_plain okvis_test/src/testFrame_plain.cpp)
- target_link_libraries(testFrame_plain    okvis_cv  )
+  target_link_libraries(testFrame_plain    okvis_cv  )
+  
+  find_package(Pangolin REQUIRED)
+  include_directories(${Pangolin_INCLUDE_DIRS})
+  add_executable(testPangolin okvis_test/src/SimpleDisplay/main.cpp)
+  target_link_libraries(testPangolin 
+  
+    ${Pangolin_LIBRARIES}
+  )
+  
 endif()
 
 
