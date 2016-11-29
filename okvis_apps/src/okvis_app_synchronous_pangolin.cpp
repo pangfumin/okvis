@@ -98,8 +98,12 @@ int main(int argc, char **argv)
                 */
   
   okvis::Viewer viewer(&okvis_estimator);
-  boost::thread viewThread(&okvis::Viewer::Run,&viewer);
-
+  //boost::thread viewThread(&okvis::Viewer::Run,&viewer);
+  okvis_estimator.setFullStateCallback(
+      std::bind(&okvis::Viewer::publishFullStateAsCallback, &viewer,
+                std::placeholders::_1, std::placeholders::_2,
+                std::placeholders::_3, std::placeholders::_4));
+               
   okvis_estimator.setBlocking(true);
 
   // the folder path

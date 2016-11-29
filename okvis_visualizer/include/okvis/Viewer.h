@@ -40,6 +40,10 @@ class Viewer
 public:
     Viewer(){};
     Viewer(okvis::ThreadedKFVio *vio);
+    void publishFullStateAsCallback(
+      const okvis::Time & t, const okvis::kinematics::Transformation & T_WS,
+      const Eigen::Matrix<double, 9, 1> & speedAndBiases,
+      const Eigen::Matrix<double, 3, 1> & omega_S);
    
 
     // Main thread function. Draw points, keyframes, the current camera pose and the last processed

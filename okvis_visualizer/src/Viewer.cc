@@ -20,7 +20,7 @@
 
 #include "okvis/Viewer.h"
 #include <pangolin/pangolin.h>
-
+#include <iostream>
 //#include <mutex>
 
 namespace okvis
@@ -45,6 +45,15 @@ Viewer::Viewer(okvis::ThreadedKFVio *vio):
     mViewpointY = -0.7;
     mViewpointZ = -1.8;
     mViewpointF = 500;
+}
+
+void Viewer::publishFullStateAsCallback(
+      const okvis::Time & t, const okvis::kinematics::Transformation & T_WS,
+      const Eigen::Matrix<double, 9, 1> & speedAndBiases,
+      const Eigen::Matrix<double, 3, 1> & omega_S)
+{
+  
+  std::cout<<"call back"<<std::endl;
 }
 
 void Viewer::Run()
@@ -119,17 +128,19 @@ void Viewer::Run()
             mpSystem->DeactivateLocalizationMode();
             bLocalizationMode = false;
         }
+        */
 
         d_cam.Activate(s_cam);
         glClearColor(1.0f,1.0f,1.0f,1.0f);
+        /*
         mpMapDrawer->DrawCurrentCamera(Twc);
         if(menuShowKeyFrames || menuShowGraph)
             mpMapDrawer->DrawKeyFrames(menuShowKeyFrames,menuShowGraph);
         if(menuShowPoints)
             mpMapDrawer->DrawMapPoints();
-
+        */
         pangolin::FinishFrame();
-
+        /*
         cv::Mat im = mpFrameDrawer->DrawFrame();
         cv::imshow("ORB-SLAM2: Current Frame",im);
         cv::waitKey(mT);
