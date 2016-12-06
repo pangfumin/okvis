@@ -18,6 +18,7 @@ include_directories(${EIGEN_INCLUDE_DIR})
 find_package( OpenCV COMPONENTS core highgui imgproc features2d REQUIRED )
 include_directories(BEFORE ${OpenCV_INCLUDE_DIRS}) 
 
+
 add_library(${PROJECT_NAME}
   src/ThreadedKFVio.cpp
   src/ImuFrameSynchronizer.cpp

@@ -23,9 +23,7 @@
 #define VIEWER_H
 
 #include <okvis/ThreadedKFVio.hpp>
-//#include "MapDrawer.h"
 
-//#include <mutex>
 #include <boost/thread.hpp>
 
 namespace okvis
@@ -65,7 +63,7 @@ private:
     bool Stop();
 
     okvis::ThreadedKFVio* mpVio;
-   // MapDrawer* mpMapDrawer;
+   
    
 
     // 1/fps in ms

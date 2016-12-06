@@ -89,20 +89,17 @@ int main(int argc, char **argv)
 
   okvis::ThreadedKFVio okvis_estimator(parameters);
 
-  //PoseViewer poseViewer;
-  /*
-  okvis_estimator.setFullStateCallback(
-      std::bind(&PoseViewer::publishFullStateAsCallback, &poseViewer,
-                std::placeholders::_1, std::placeholders::_2,
-                std::placeholders::_3, std::placeholders::_4));
-                */
+ 
   
-  okvis::Viewer viewer(&okvis_estimator);
-  //boost::thread viewThread(&okvis::Viewer::Run,&viewer);
+  //okvis::Viewer viewer(&okvis_estimator);
+  
+ // boost::thread viewThread(&okvis::Viewer::Run,&viewer);
+  /*
   okvis_estimator.setFullStateCallback(
       std::bind(&okvis::Viewer::publishFullStateAsCallback, &viewer,
                 std::placeholders::_1, std::placeholders::_2,
                 std::placeholders::_3, std::placeholders::_4));
+                */
                
   okvis_estimator.setBlocking(true);
 

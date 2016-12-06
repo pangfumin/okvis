@@ -59,6 +59,7 @@
 #include <okvis/timing/Timer.hpp>
 #include <okvis/threadsafe/ThreadsafeQueue.hpp>
 
+
 #ifdef USE_MOCK
 #include <../test/MockVioFrontendInterface.hpp>
 #include <../test/MockVioBackendInterface.hpp>
@@ -231,6 +232,7 @@ class ThreadedKFVio : public VioInterface {
   virtual void setBlocking(bool blocking);
 
   /// \}
+ 
 
   /// \brief Trigger display (needed because OSX won't allow threaded display).
   void display();
@@ -328,6 +330,8 @@ class ThreadedKFVio : public VioInterface {
   /// This is set to true after optimization to signal the IMU consumer loop to repropagate
   /// the state from the lastOptimizedStateTimestamp_.
   std::atomic_bool repropagationNeeded_;
+  
+  
 
   /// @}
 
