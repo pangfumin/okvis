@@ -59,7 +59,7 @@
 #include <okvis/timing/Timer.hpp>
 #include <okvis/threadsafe/ThreadsafeQueue.hpp>
 
-
+#include <okvis/pangolinViewer.hpp>
 #ifdef USE_MOCK
 #include <../test/MockVioFrontendInterface.hpp>
 #include <../test/MockVioBackendInterface.hpp>
@@ -86,6 +86,8 @@ namespace okvis {
  *  All the queues can be limited to size 1 to back propagate processing congestions
  *  to the user callback.
  */
+
+class pangolinViewer;
 class ThreadedKFVio : public VioInterface {
  public:
 
@@ -232,6 +234,11 @@ class ThreadedKFVio : public VioInterface {
   virtual void setBlocking(bool blocking);
 
   /// \}
+  
+  void setPangolinViewer(okvis::pangolinViewer* viewer)
+  {
+    viewer_ = viewer;      
+  }
  
 
   /// \brief Trigger display (needed because OSX won't allow threaded display).
@@ -244,6 +251,7 @@ class ThreadedKFVio : public VioInterface {
   void init();
 
  private:
+  okvis::pangolinViewer* viewer_;
 
   /// \brief Loop to process frames from camera with index cameraIndex
   void frameConsumerLoop(size_t cameraIndex);

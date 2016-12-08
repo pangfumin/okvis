@@ -18,7 +18,7 @@
 * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "okvis/Viewer.h"
+#include "okvis/pangolinViewer.hpp"
 #include <pangolin/pangolin.h>
 #include <iostream>
 //#include <mutex>
@@ -28,8 +28,8 @@ namespace okvis
   
   
 
-Viewer::Viewer(okvis::ThreadedKFVio *vio):
-    mpVio(vio),
+pangolinViewer::pangolinViewer():
+   
     mbFinishRequested(false), mbFinished(true), mbStopped(false), mbStopRequested(false)
 {
    
@@ -55,53 +55,7 @@ Viewer::Viewer(okvis::ThreadedKFVio *vio):
    
 }
 
-void Viewer::publishFullStateAsCallback(
-      const okvis::Time & t, const okvis::kinematics::Transformation & T_WS,
-      const Eigen::Matrix<double, 9, 1> & speedAndBiases,
-      const Eigen::Matrix<double, 3, 1> & omega_S)
-{
-  
-     std::cout<<"call back"<<std::endl;
-     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        /*
-        mpMapDrawer->GetCurrentOpenGLCameraMatrix(Twc);
-
-        if(menuFollowCamera && bFollow)
-        {
-            s_cam.Follow(Twc);
-        }
-        else if(menuFollowCamera && !bFollow)
-        {
-            s_cam.SetModelViewMatrix(pangolin::ModelViewLookAt(mViewpointX,mViewpointY,mViewpointZ, 0,0,0,0.0,-1.0, 0.0));
-            s_cam.Follow(Twc);
-            bFollow = true;
-        }
-        else if(!menuFollowCamera && bFollow)
-        {
-            bFollow = false;
-        }
-
-        if(menuLocalizationMode && !bLocalizationMode)
-        {
-            mpSystem->ActivateLocalizationMode();
-            bLocalizationMode = true;
-        }
-        else if(!menuLocalizationMode && bLocalizationMode)
-        {
-            mpSystem->DeactivateLocalizationMode();
-            bLocalizationMode = false;
-        }
-        */
-
-       
-	
-	
-	
-      
-       
-    
-}
-void Viewer::Run()
+void pangolinViewer::Run()
 {
   
     mbFinished = false;
@@ -189,48 +143,47 @@ void Viewer::Run()
     SetFinish();
     
 }
+ 
 
-
-
-void Viewer::RequestFinish()
+void pangolinViewer::RequestFinish()
 {
     boost::mutex::scoped_lock lock(mMutexFinish);
     mbFinishRequested = true;
 }
 
-bool Viewer::CheckFinish()
+bool pangolinViewer::CheckFinish()
 {
      boost::mutex::scoped_lock  lock(mMutexFinish);
     return mbFinishRequested;
 }
 
-void Viewer::SetFinish()
+void pangolinViewer::SetFinish()
 {
      boost::mutex::scoped_lock lock(mMutexFinish);
     mbFinished = true;
 }
 
-bool Viewer::isFinished()
+bool pangolinViewer::isFinished()
 {
      boost::mutex::scoped_lock  lock(mMutexFinish);
     
     return mbFinished;
 }
 
-void Viewer::RequestStop()
+void pangolinViewer::RequestStop()
 {
      boost::mutex::scoped_lock  lock(mMutexStop);
     if(!mbStopped)
         mbStopRequested = true;
 }
 
-bool Viewer::isStopped()
+bool pangolinViewer::isStopped()
 {
      boost::mutex::scoped_lock  lock(mMutexStop);
     return mbStopped;
 }
 
-bool Viewer::Stop()
+bool pangolinViewer::Stop()
 {
      boost::mutex::scoped_lock  lock(mMutexStop);
     boost::mutex::scoped_lock lock2(mMutexFinish);
@@ -248,7 +201,7 @@ bool Viewer::Stop()
 
 }
 
-void Viewer::Release()
+void pangolinViewer::Release()
 {
      boost::mutex::scoped_lock  lock(mMutexStop);
     mbStopped = false;

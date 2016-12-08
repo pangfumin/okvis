@@ -58,7 +58,7 @@
 #pragma GCC diagnostic pop
 #include <okvis/VioParametersReader.hpp>
 #include <okvis/ThreadedKFVio.hpp>
-#include <okvis/Viewer.h>
+#include <okvis/pangolinViewer.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
 
@@ -91,15 +91,15 @@ int main(int argc, char **argv)
 
  
   
-  //okvis::Viewer viewer(&okvis_estimator);
+  okvis::pangolinViewer* viewer = new okvis::pangolinViewer();
+  okvis_estimator.setPangolinViewer(viewer);
   
- // boost::thread viewThread(&okvis::Viewer::Run,&viewer);
-  /*
-  okvis_estimator.setFullStateCallback(
-      std::bind(&okvis::Viewer::publishFullStateAsCallback, &viewer,
-                std::placeholders::_1, std::placeholders::_2,
-                std::placeholders::_3, std::placeholders::_4));
-                */
+  
+ 
+   
+  
+  boost::thread viewThread(&okvis::pangolinViewer::Run,viewer);
+ 
                
   okvis_estimator.setBlocking(true);
 

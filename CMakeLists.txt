@@ -342,10 +342,6 @@ include_directories(okvis_multisensor_processing/include)
 add_subdirectory(okvis_multisensor_processing)
 add_dependencies(okvis_multisensor_processing okvis_util)
 
-# add visualizer
-include_directories(okvis_visualizer/include)
-add_subdirectory(okvis_visualizer)
-add_dependencies(okvis_visualizer okvis_util)
 
 # also build the apps
 if(BUILD_APPS)
@@ -391,7 +387,6 @@ if(BUILD_APPS)
     okvis_matcher
     okvis_frontend 
     okvis_multisensor_processing
-    okvis_visualizer
     pthread 
     ${Boost_LIBRARIES}
     ${Pangolin_LIBRARIES}

@@ -860,7 +860,7 @@ void ThreadedKFVio::publisherLoop() {
     OptimizationResults result;
     if (optimizationResults_.PopBlocking(&result) == false)
       return;
-
+    
     // call all user callbacks
     if (stateCallback_ && !result.onlyPublishLandmarks)
       stateCallback_(result.stamp, result.T_WS);

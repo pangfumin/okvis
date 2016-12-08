@@ -13,7 +13,8 @@ message(STATUS ${CMAKE_CURRENT_BINARY_DIR}/okvisConfig.hpp)
 # require Eigen
 find_package( Eigen REQUIRED )
 include_directories(${EIGEN_INCLUDE_DIR}) 
-
+find_package(Pangolin REQUIRED)
+FIND_PACKAGE(Boost COMPONENTS thread REQUIRED)
 # require OpenCV
 find_package( OpenCV COMPONENTS core highgui imgproc features2d REQUIRED )
 include_directories(BEFORE ${OpenCV_INCLUDE_DIRS}) 
@@ -24,11 +25,13 @@ add_library(${PROJECT_NAME}
   src/ImuFrameSynchronizer.cpp
   src/FrameSynchronizer.cpp
   src/VioVisualizer.cpp
+  src/pangolinViewer.cc
   include/okvis/ThreadedKFVio.hpp
   include/okvis/ImuFrameSynchronizer.hpp
   include/okvis/FrameSynchronizer.hpp
   include/okvis/VioVisualizer.hpp
   include/okvis/threadsafe/ThreadsafeQueue.hpp
+  include/okvis/pangolinViewer.hpp
   ../cmake/okvisConfig.hpp.in
   okvisConfig.hpp
 )
@@ -43,6 +46,8 @@ target_link_libraries(${PROJECT_NAME}
    PUBLIC okvis_ceres 
    PUBLIC okvis_frontend
    PRIVATE ${GLOG_LIBRARIES}
+   PRIVATE ${Pangolin_LIBRARIES}
+   PRIVATE ${Boost_LIBRARIES}
 )
 
 # export config

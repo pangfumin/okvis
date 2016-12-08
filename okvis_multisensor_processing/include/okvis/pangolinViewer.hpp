@@ -22,28 +22,20 @@
 #ifndef VIEWER_H
 #define VIEWER_H
 
-#include <okvis/ThreadedKFVio.hpp>
+
+#include <Eigen/Core>
+
 
 #include <boost/thread.hpp>
-
 namespace okvis
 {
 
 
-//class MapDrawer;
-class ThreadedKFVio;
-
-class Viewer
+class pangolinViewer
 {
 public:
-    Viewer(){};
-    Viewer(okvis::ThreadedKFVio *vio);
-    void publishFullStateAsCallback(
-      const okvis::Time & t, const okvis::kinematics::Transformation & T_WS,
-      const Eigen::Matrix<double, 9, 1> & speedAndBiases,
-      const Eigen::Matrix<double, 3, 1> & omega_S);
+    pangolinViewer();
    
-
     // Main thread function. Draw points, keyframes, the current camera pose and the last processed
     // frame. Drawing is refreshed according to the camera fps. We use Pangolin.
     void Run();
@@ -61,10 +53,6 @@ public:
 private:
 
     bool Stop();
-
-    okvis::ThreadedKFVio* mpVio;
-   
-   
 
     // 1/fps in ms
     double mT;
