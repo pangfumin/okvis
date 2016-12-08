@@ -19,7 +19,7 @@
 */
 
 #include "okvis/pangolinViewer.hpp"
-#include <pangolin/pangolin.h>
+
 #include <iostream>
 //#include <mutex>
 
@@ -30,7 +30,7 @@ namespace okvis
 
 pangolinViewer::pangolinViewer():
    
-    mbFinishRequested(false), mbFinished(true), mbStopped(false), mbStopRequested(false)
+    mbFinishRequested(false), mbFinished(true), mbStopped(false), mbStopRequested(false),newPoseAriving_(false)
 {
    
     mT = 1e3/20.0;
@@ -47,6 +47,26 @@ pangolinViewer::pangolinViewer():
     mViewpointY = -0.7;
     mViewpointZ = -1.8;
     mViewpointF = 500;
+    
+    /*
+    Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize:2
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3
+Viewer.ViewpointX: 0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -1.8
+Viewer.ViewpointF: 500
+*/
+    mKeyFrameSize = 0.05;
+    mKeyFrameLineWidth = 1;
+    mGraphLineWidth = 0.9;
+    mPointSize = 2;
+    mCameraSize = 0.08;
+    mCameraLineWidth = 3;
+
     
     
    
@@ -70,7 +90,7 @@ void pangolinViewer::Run()
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     pangolin::CreatePanel("menu").SetBounds(0.0,1.0,0.0,pangolin::Attach::Pix(175));
-    pangolin::Var<bool> menuFollowCamera("menu.Follow Camera",true,true);
+    pangolin::Var<bool> menuFollowCamera("menu.Follow Camera",false,true);
     pangolin::Var<bool> menuShowPoints("menu.Show Points",true,true);
     pangolin::Var<bool> menuShowKeyFrames("menu.Show KeyFrames",true,true);
     pangolin::Var<bool> menuShowGraph("menu.Show Graph",true,true);
@@ -88,24 +108,45 @@ void pangolinViewer::Run()
             .SetBounds(0.0, 1.0, pangolin::Attach::Pix(175), 1.0, -1024.0f/768.0f)
             .SetHandler(new pangolin::Handler3D(s_cam));
 
-    pangolin::OpenGlMatrix Twc;
-    Twc.SetIdentity();
+   
+   
 
    
 
-    bool bFollow = true;
+    bool bFollow = false;
     bool bLocalizationMode = false;
 
     while(1)
     {
       
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	GetCurrentOpenGLCameraMatrix(Twc_);
+
+        if(menuFollowCamera && bFollow)
+        {
+            s_cam.Follow(Twc_);
+        }
+        else if(menuFollowCamera && !bFollow)
+        {
+            s_cam.SetModelViewMatrix(pangolin::ModelViewLookAt(mViewpointX,mViewpointY,mViewpointZ, 0,0,0,0.0,-1.0, 0.0));
+            s_cam.Follow(Twc_);
+            bFollow = true;
+        }
+        else if(!menuFollowCamera && bFollow)
+        {
+            bFollow = false;
+        }
+
+        
        
 
         d_cam.Activate(s_cam);
+        
         glClearColor(1.0f,1.0f,1.0f,1.0f);
-       
+        DrawCurrentCamera(Twc_);
         pangolin::FinishFrame();
+	
+	
         
 
         if(menuReset)
@@ -118,9 +159,11 @@ void pangolinViewer::Run()
                 //mpSystem->DeactivateLocalizationMode();
             bLocalizationMode = false;
             bFollow = true;
-            menuFollowCamera = true;
+            menuFollowCamera = false;
            // mpSystem->Reset();
             menuReset = false;
+	    
+	   // std::cout<<"reset"<<std::endl;
         }
 
         if(Stop())
@@ -143,6 +186,105 @@ void pangolinViewer::Run()
     SetFinish();
     
 }
+
+void pangolinViewer::setShowInfo( const okvis::Time & t, const okvis::kinematics::Transformation & T_WS,
+      const Eigen::Matrix<double, 9, 1> & speedAndBiases,
+      const Eigen::Matrix<double, 3, 1> & /*omega_S*/)
+{
+  
+   boost::mutex::scoped_lock lock(mGetInfo);
+   t_ = t; 
+   T_WS_ = T_WS;
+   speedAndBiases_ = speedAndBiases;
+   //std::cout<<"showinfo set"<<std::endl;
+  
+ 
+}
+
+
+void pangolinViewer::GetCurrentOpenGLCameraMatrix(pangolin::OpenGlMatrix &M)
+{
+        Eigen::Matrix3d Rwc;
+        Eigen::Vector3d twc;
+        {
+            boost::mutex::scoped_lock lock(mGetInfo);
+            Rwc = T_WS_.C();
+            twc = T_WS_.r();
+        }
+       std::cout<<twc(0) <<" "<< twc(1)<<" "<<twc(2)<<std::endl;
+
+        M.m[0] = Rwc(0,0);
+        M.m[1] = Rwc(1,0);
+        M.m[2] = Rwc(2,0);
+        M.m[3]  = 0.0;
+
+        M.m[4] = Rwc(0,1);
+        M.m[5] = Rwc(1,1);
+        M.m[6] = Rwc(2,1);
+        M.m[7]  = 0.0;
+
+        M.m[8] = Rwc(0,2);
+        M.m[9] = Rwc(1,2);
+        M.m[10] = Rwc(2,2);
+        M.m[11]  = 0.0;
+
+        M.m[12] = twc(0);
+        M.m[13] = twc(1);
+        M.m[14] = twc(2);
+        M.m[15]  = 1.0;
+    
+ 
+}
+
+
+
+void pangolinViewer::DrawCurrentCamera(pangolin::OpenGlMatrix &Twc)
+{
+    const float &w = mCameraSize;
+    const float h = w*0.75;
+    const float z = w*0.6;
+
+    glPushMatrix();
+
+#ifdef HAVE_GLES
+        glMultMatrixf(Twc.m);
+#else
+        glMultMatrixd(Twc.m);
+#endif
+	std::cout<< Twc.m[12]<<std::endl;
+
+    glLineWidth(mCameraLineWidth);
+    glColor3f(0.0f,1.0f,0.0f);
+    glBegin(GL_LINES);
+    glVertex3f(0,0,0);
+    glVertex3f(w,h,z);
+    glVertex3f(0,0,0);
+    glVertex3f(w,-h,z);
+    glVertex3f(0,0,0);
+    glVertex3f(-w,-h,z);
+    glVertex3f(0,0,0);
+    glVertex3f(-w,h,z);
+
+    glVertex3f(w,h,z);
+    glVertex3f(w,-h,z);
+
+    glVertex3f(-w,h,z);
+    glVertex3f(-w,-h,z);
+
+    glVertex3f(-w,h,z);
+    glVertex3f(w,h,z);
+
+    glVertex3f(-w,-h,z);
+    glVertex3f(w,-h,z);
+    glEnd();
+
+    glPopMatrix();
+    
+   // std::cout<<"show pose"<<std::endl;
+}
+
+
+
  
 
 void pangolinViewer::RequestFinish()

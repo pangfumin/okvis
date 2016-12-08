@@ -861,12 +861,25 @@ void ThreadedKFVio::publisherLoop() {
     if (optimizationResults_.PopBlocking(&result) == false)
       return;
     
+   
     // call all user callbacks
     if (stateCallback_ && !result.onlyPublishLandmarks)
       stateCallback_(result.stamp, result.T_WS);
-    if (fullStateCallback_ && !result.onlyPublishLandmarks)
+    if (fullStateCallback_ && !result.onlyPublishLandmarks){
+      
       fullStateCallback_(result.stamp, result.T_WS, result.speedAndBiases,
                          result.omega_S);
+      
+   
+       
+    }
+    // 新的更新
+    if (!result.onlyPublishLandmarks)
+    {
+      
+       viewer_->setShowInfo(result.stamp, result.T_WS, result.speedAndBiases,
+                         result.omega_S);
+    }
     if (fullStateCallbackWithExtrinsics_ && !result.onlyPublishLandmarks)
       fullStateCallbackWithExtrinsics_(result.stamp, result.T_WS,
                                        result.speedAndBiases, result.omega_S,

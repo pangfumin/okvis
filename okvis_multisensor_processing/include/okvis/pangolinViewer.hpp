@@ -24,8 +24,8 @@
 
 
 #include <Eigen/Core>
-
-
+#include <pangolin/pangolin.h>
+#include "okvis/ThreadedKFVio.hpp"
 #include <boost/thread.hpp>
 namespace okvis
 {
@@ -49,10 +49,18 @@ public:
     bool isStopped();
 
     void Release();
+    
+    void setShowInfo( const okvis::Time & t, const okvis::kinematics::Transformation & T_WS,
+      const Eigen::Matrix<double, 9, 1> & speedAndBiases,
+      const Eigen::Matrix<double, 3, 1> & /*omega_S*/);
+    
+    
 
 private:
 
     bool Stop();
+    void GetCurrentOpenGLCameraMatrix(pangolin::OpenGlMatrix &M);
+    void DrawCurrentCamera(pangolin::OpenGlMatrix &Twc);
 
     // 1/fps in ms
     double mT;
@@ -69,7 +77,24 @@ private:
     bool mbStopped;
     bool mbStopRequested;
     boost::mutex mMutexStop;
-
+    boost::mutex mGetInfo;
+    
+    
+    float mKeyFrameSize;
+    float mKeyFrameLineWidth;
+    float mGraphLineWidth;
+    float mPointSize;
+    float mCameraSize;
+    float mCameraLineWidth;
+    
+    bool newPoseAriving_;
+    pangolin::OpenGlMatrix Twc_;
+    Time  t_; 
+    kinematics::Transformation  T_WS_;
+    
+    Eigen::Matrix<double, 9, 1>  speedAndBiases_;
+    Eigen::Matrix<double, 3, 1>  omega_S_;
+      
 };
 
 }
