@@ -418,6 +418,8 @@ void ThreadedKFVio::frameConsumerLoop(size_t cameraIndex) {
                                           multiFrame->timestamp());
       propagationTimer.stop();
     }
+    
+    // get T_WC
     okvis::kinematics::Transformation T_WC = T_WS
         * (*parameters_.nCameraSystem.T_SC(frame->sensorId));
     beforeDetectTimer.stop();
@@ -873,10 +875,10 @@ void ThreadedKFVio::publisherLoop() {
    
        
     }
-    // 新的更新
+    
     if (!result.onlyPublishLandmarks)
     {
-      
+      //
        viewer_->setShowInfo(result.stamp, result.T_WS, result.speedAndBiases,
                          result.omega_S);
     }

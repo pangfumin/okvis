@@ -404,12 +404,14 @@ if(${BUILD_PLAIN_TESTS})
  target_link_libraries(testIMUerror_plain    okvis_ceres  )
  add_executable(testHomogeneousPointError_plain okvis_test/src/testHomogeneousPointError_plain.cpp)
  target_link_libraries(testHomogeneousPointError_plain    okvis_ceres  )   
-# add_executable(testReprojectionError_plain okvis_test/src/testReprojectionError_plain.cpp)
-# target_link_libraries(testReprojectionError_plain    okvis_ceres  )
+ add_executable(testReprojectionError_plain okvis_test/src/testReprojectionError_plain.cpp)
+ target_link_libraries(testReprojectionError_plain    okvis_ceres  )
  add_executable(testMap_plain okvis_test/src/testMap_plain.cpp)
  target_link_libraries(testMap_plain    okvis_ceres  )
  add_executable(testMarginalization_plain okvis_test/src/testMarginalization_plain.cpp)
  target_link_libraries(testMarginalization_plain    okvis_ceres  )
+ 
+ 
  
  # test cv
   add_executable(testFrame_plain okvis_test/src/testFrame_plain.cpp)

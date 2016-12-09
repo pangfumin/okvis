@@ -1,23 +1,3 @@
-/**
-* This file is part of ORB-SLAM2.
-*
-* Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University of Zaragoza)
-* For more information see <https://github.com/raulmur/ORB_SLAM2>
-*
-* ORB-SLAM2 is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* ORB-SLAM2 is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #include "okvis/pangolinViewer.hpp"
 
 #include <iostream>
@@ -30,7 +10,7 @@ namespace okvis
 
 pangolinViewer::pangolinViewer():
    
-    mbFinishRequested(false), mbFinished(true), mbStopped(false), mbStopRequested(false),newPoseAriving_(false)
+    mbFinishRequested(false), mbFinished(true), mbStopped(false), mbStopRequested(false)
 {
    
     mT = 1e3/20.0;
@@ -47,25 +27,13 @@ pangolinViewer::pangolinViewer():
     mViewpointY = -0.7;
     mViewpointZ = -1.8;
     mViewpointF = 500;
-    
-    /*
-    Viewer.KeyFrameSize: 0.05
-Viewer.KeyFrameLineWidth: 1
-Viewer.GraphLineWidth: 0.9
-Viewer.PointSize:2
-Viewer.CameraSize: 0.08
-Viewer.CameraLineWidth: 3
-Viewer.ViewpointX: 0
-Viewer.ViewpointY: -0.7
-Viewer.ViewpointZ: -1.8
-Viewer.ViewpointF: 500
-*/
+  
     mKeyFrameSize = 0.05;
     mKeyFrameLineWidth = 1;
     mGraphLineWidth = 0.9;
     mPointSize = 2;
     mCameraSize = 0.08;
-    mCameraLineWidth = 3;
+    mCameraLineWidth = 6;
 
     
     
@@ -211,7 +179,7 @@ void pangolinViewer::GetCurrentOpenGLCameraMatrix(pangolin::OpenGlMatrix &M)
             Rwc = T_WS_.C();
             twc = T_WS_.r();
         }
-       std::cout<<twc(0) <<" "<< twc(1)<<" "<<twc(2)<<std::endl;
+      // std::cout<<twc(0) <<" "<< twc(1)<<" "<<twc(2)<<std::endl;
 
         M.m[0] = Rwc(0,0);
         M.m[1] = Rwc(1,0);
@@ -251,8 +219,8 @@ void pangolinViewer::DrawCurrentCamera(pangolin::OpenGlMatrix &Twc)
 #else
         glMultMatrixd(Twc.m);
 #endif
-	std::cout<< Twc.m[12]<<std::endl;
-
+	//std::cout<< Twc.m[12]<<std::endl;
+    /*
     glLineWidth(mCameraLineWidth);
     glColor3f(0.0f,1.0f,0.0f);
     glBegin(GL_LINES);
@@ -277,7 +245,22 @@ void pangolinViewer::DrawCurrentCamera(pangolin::OpenGlMatrix &Twc)
     glVertex3f(-w,-h,z);
     glVertex3f(w,-h,z);
     glEnd();
-
+    */
+    
+    // r g b
+    glBegin(GL_LINES);
+    glLineWidth(mCameraLineWidth);
+    glColor3f(1.0f,0.0f,0.0f);
+    glBegin(GL_LINES);
+    glVertex3f(0,0,0);
+    glVertex3f(w,0,0);
+    glColor3f(0.0f,1.0f,0.0f);
+    glVertex3f(0,0,0);
+    glVertex3f(0,w,0);
+    glColor3f(0.0f,0.0f,1.0f);
+    glVertex3f(0,0,0);
+    glVertex3f(0,0,w);
+    glEnd();
     glPopMatrix();
     
    // std::cout<<"show pose"<<std::endl;
