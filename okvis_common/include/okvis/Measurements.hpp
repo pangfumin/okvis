@@ -118,45 +118,6 @@ struct DepthCameraData {
   bool deliversKeypoints; ///< Are keypoints already delievered in measurement?
 };
 
-/// \brief Position measurement.
-struct PositionReading {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  Eigen::Vector3d position;           ///< Position measurement.
-  Eigen::Vector3d positionOffset;     ///< Position offset.
-  Eigen::Matrix3d positionCovariance; ///< Measurement covariance.
-};
-
-/// \brief GPS position measurement.
-struct GpsPositionReading {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  double lat_wgs84;   ///< Latitude in WGS84 coordinate system.
-  double lon_wgs84;   ///< Longitude in WGS84 coordiante system.
-  double alt_wgs84;   ///< Altitude in WGS84 coordinate system.
-  double geoidSeparation; ///< Separation between geoid (MSL) and WGS-84 ellipsoid. [m]
-  Eigen::Matrix3d positionCovarianceENU; ///< Measurement covariance. East/North/Up.
-};
-
-/// \brief Magnetometer measurement.
-struct MagnetometerReading {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  ///< The magnetic flux density measurement. [uT]
-  Eigen::Vector3d fluxDensity;
-};
-
-/// \brief Barometer measurement.
-struct BarometerReading {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  double pressure;    ///< Pressure measurement. [Pa]
-  double temperature; ///< Temperature. [K]
-};
-
-/// \brief Differential pressure sensor measurement.
-struct DifferentialPressureReading {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  double pressure;  ///< Pressure measurement. [Pa]
-  Eigen::Vector3d acceleration_B;  ///< Acceleration in B-frame.
-};
-
 // this is how we store raw measurements before more advanced filling into
 // data structures happens:
 typedef Measurement<ImuSensorReadings> ImuMeasurement;
@@ -166,6 +127,19 @@ struct CameraData {
   cv::Mat image;  ///< Image.
   std::vector<cv::KeyPoint> keypoints; ///< Keypoints if available.
   bool deliversKeypoints; ///< Are the keypoints delivered too?
+};
+
+
+struct StereoData {
+  cv::Mat image0;  ///< Image.
+  std::vector<cv::KeyPoint> keypoints0; ///< Keypoints if available.
+  bool deliversKeypoints0; ///< Are the keypoints delivered too?
+  
+  cv::Mat image1;  ///< Image.
+  std::vector<cv::KeyPoint> keypoints1; ///< Keypoints if available.
+  bool deliversKeypoints1; ///< Are the keypoints delivered too?
+  
+  
 };
 /// \brief Keypoint measurement.
 struct KeypointData {
@@ -180,24 +154,9 @@ struct FrameData {
   KeypointData keypoints; ///< Keypoints.
 };
 typedef Measurement<CameraData> CameraMeasurement;
+typedef Measurement<StereoData> StereoMeasurement;
 typedef Measurement<FrameData> FrameMeasurement;
 typedef Measurement<DepthCameraData> DepthCameraMeasurement;
-
-typedef Measurement<PositionReading> PositionMeasurement;
-typedef std::deque<PositionMeasurement,
-    Eigen::aligned_allocator<PositionMeasurement> > PositionMeasurementDeque;
-
-typedef Measurement<GpsPositionReading> GpsPositionMeasurement;
-typedef std::deque<GpsPositionMeasurement,
-    Eigen::aligned_allocator<GpsPositionMeasurement> > GpsPositionMeasurementDeque;
-
-typedef Measurement<MagnetometerReading> MagnetometerMeasurement;
-typedef std::deque<MagnetometerMeasurement,
-    Eigen::aligned_allocator<MagnetometerMeasurement> > MagnetometerMeasurementDeque;
-
-typedef Measurement<BarometerReading> BarometerMeasurement;
-
-typedef Measurement<DifferentialPressureReading> DifferentialPressureMeasurement;
 
 typedef Eigen::Matrix<double, 9, 1> SpeedAndBias;
 

@@ -176,66 +176,76 @@ int main(int argc, char **argv)
     /// add images
     okvis::Time t;
 
-    for (size_t i = 0; i < numCameras; ++i) {
-      cv::Mat filtered = cv::imread(
-          path + "/cam" + std::to_string(i) + "/data/" + *cam_iterators.at(i),
-          cv::IMREAD_GRAYSCALE);
-      std::string nanoseconds = cam_iterators.at(i)->substr(
-          cam_iterators.at(i)->size() - 13, 9);
-      std::string seconds = cam_iterators.at(i)->substr(
-          0, cam_iterators.at(i)->size() - 13);
-      t = okvis::Time(std::stoi(seconds), std::stoi(nanoseconds));
-      if (start == okvis::Time(0.0)) {
-        start = t;
-      }
-      
-      
-
-      // get all IMU measurements till then
-      okvis::Time t_imu = start;
-      do {
-        if (!std::getline(imu_file, line)) {
-          std::cout << std::endl << "Finished. Press any key to exit." << std::endl << std::flush;
-          cv::waitKey();
-          return 0;
-        }
-
-        std::stringstream stream(line);
-        std::string s;
-        std::getline(stream, s, ',');
-        std::string nanoseconds = s.substr(s.size() - 9, 9);
-        std::string seconds = s.substr(0, s.size() - 9);
-
-        Eigen::Vector3d gyr;
-        for (int j = 0; j < 3; ++j) {
-          std::getline(stream, s, ',');
-          gyr[j] = std::stof(s);
-        }
-
-        Eigen::Vector3d acc;
-        for (int j = 0; j < 3; ++j) {
-          std::getline(stream, s, ',');
-          acc[j] = std::stof(s);
-        }
-
-        t_imu = okvis::Time(std::stoi(seconds), std::stoi(nanoseconds));
-        
-        // add the IMU measurement for (blocking) processing
-        if (t_imu - start + okvis::Duration(1.0) > deltaT) {
-          okvis_estimator.addImuMeasurement(t_imu, acc, gyr);
-	  std::cout<< "IMU time "<< t_imu<<std::endl;
-        }
-
-      } while (t_imu <= t);
-
-      // add the image to the frontend for (blocking) processing
-      if (t - start > deltaT) {
-        okvis_estimator.addImage(t, i, filtered);
-	std::cout<< "image time "<<i<<" "<< t<<std::endl;
-      }
-
-      cam_iterators[i]++;
+   
+    cv::Mat filtered0 = cv::imread(
+	path + "/cam" + std::to_string(0) + "/data/" + *cam_iterators.at(0),
+	cv::IMREAD_GRAYSCALE);
+    
+    cv::Mat filtered1 = cv::imread(
+      path + "/cam" + std::to_string(1) + "/data/" + *cam_iterators.at(1),
+      cv::IMREAD_GRAYSCALE);
+     
+    
+    // Assuming the images from diffrent cameras are synchronous
+    std::string nanoseconds = cam_iterators.at(0)->substr(
+	cam_iterators.at(0)->size() - 13, 9);
+    std::string seconds = cam_iterators.at(0)->substr(
+	0, cam_iterators.at(0)->size() - 13);
+    t = okvis::Time(std::stoi(seconds), std::stoi(nanoseconds));
+    if (start == okvis::Time(0.0)) {
+      start = t;
     }
+    
+    
+
+    // get all IMU measurements till then
+    okvis::Time t_imu = start;
+    do {
+      if (!std::getline(imu_file, line)) {
+	std::cout << std::endl << "Finished. Press any key to exit." << std::endl << std::flush;
+	cv::waitKey();
+	return 0;
+      }
+
+      std::stringstream stream(line);
+      std::string s;
+      std::getline(stream, s, ',');
+      std::string nanoseconds = s.substr(s.size() - 9, 9);
+      std::string seconds = s.substr(0, s.size() - 9);
+
+      Eigen::Vector3d gyr;
+      for (int j = 0; j < 3; ++j) {
+	std::getline(stream, s, ',');
+	gyr[j] = std::stof(s);
+      }
+
+      Eigen::Vector3d acc;
+      for (int j = 0; j < 3; ++j) {
+	std::getline(stream, s, ',');
+	acc[j] = std::stof(s);
+      }
+
+      t_imu = okvis::Time(std::stoi(seconds), std::stoi(nanoseconds));
+      
+      // add the IMU measurement for (blocking) processing
+      if (t_imu - start + okvis::Duration(1.0) > deltaT) {
+	okvis_estimator.addImuMeasurement(t_imu, acc, gyr);
+	//std::cout<< "IMU time "<< t_imu<<std::endl;
+      }
+
+    } while (t_imu <= t);
+
+    // add the image to the frontend for (blocking) processing
+    if (t - start > deltaT) {
+     // okvis_estimator.addImage(t, i, filtered);
+    // okvis_estimator.addImage(t, i, filtered);
+      okvis_estimator.addStereo(t,filtered0,filtered1);
+      //std::cout<< "image time "<<" "<< t<<std::endl;
+    }
+
+    cam_iterators[0]++;
+    cam_iterators[1]++;
+    
     ++counter;
 
     // display progress

@@ -100,19 +100,13 @@ class ThreadedKFVio : public VioInterface {
   typedef okvis::timing::Timer TimerSwitchable;
 #endif
 
-#ifdef USE_MOCK
 
-  /// \brief constructor for gmock
-  ThreadedKFVio(okvis::VioParameters& parameters, okvis::MockVioBackendInterface& estimator,
-      okvis::MockVioFrontendInterface& frontend);
-
-#else
   /**
    * \brief Constructor.
    * \param parameters Parameters and settings.
    */
   ThreadedKFVio(okvis::VioParameters& parameters);
-#endif
+
 
   /// \brief Destructor. This calls Shutdown() for all threadsafe queues and joins all threads.
   virtual ~ThreadedKFVio();
@@ -133,6 +127,13 @@ class ThreadedKFVio : public VioInterface {
   virtual bool addImage(const okvis::Time & stamp, size_t cameraIndex,
                         const cv::Mat & image,
                         const std::vector<cv::KeyPoint> * keypoints = 0,
+			
+                        bool* asKeyframe = 0);
+  
+  bool addStereo(const okvis::Time & stamp, 
+                        const cv::Mat & image0, const cv::Mat & image1,
+                        const std::vector<cv::KeyPoint> * keypoints0= 0,
+		        const std::vector<cv::KeyPoint> * keypoints1 = 0,
                         bool* asKeyframe = 0);
 
   /**
@@ -150,7 +151,7 @@ class ThreadedKFVio : public VioInterface {
                             const std::vector<cv::KeyPoint> & keypoints,
                             const std::vector<uint64_t> & landmarkIds,
                             const cv::Mat& descriptors = cv::Mat(),
-                            bool* asKeyframe = 0);
+                            bool* asKeyframe = 0){};
 
   /**
    * \brief          Add an IMU measurement.
@@ -195,10 +196,17 @@ class ThreadedKFVio : public VioInterface {
 
   /// \brief Loop to process frames from camera with index cameraIndex
   void frameConsumerLoop(size_t cameraIndex);
+  
+  
+
+  // Loop to process frames from camera with index cameraIndex
+  void stereoConsumerLoop();
+  
   /// \brief Loop that matches frames with existing frames.
   void matchingLoop();
   /// \brief Loop to process IMU measurements.
   void imuConsumerLoop();
+  
  
   /// \brief Loop that visualizes completed frames.
   void visualizationLoop();
@@ -286,11 +294,13 @@ class ThreadedKFVio : public VioInterface {
   /// Camera measurement input queues. For each camera in the configuration one.
   std::vector<std::shared_ptr<
       okvis::threadsafe::ThreadSafeQueue<std::shared_ptr<okvis::CameraMeasurement> > > > cameraMeasurementsReceived_;
+      
+  std::shared_ptr<
+      okvis::threadsafe::ThreadSafeQueue<std::shared_ptr<okvis::StereoMeasurement> > >  StereoMeasurementsReceived_;
   /// IMU measurement input queue.
   okvis::threadsafe::ThreadSafeQueue<okvis::ImuMeasurement> imuMeasurementsReceived_;
 
-  /// Position measurement input queue.
-  okvis::threadsafe::ThreadSafeQueue<okvis::PositionMeasurement> positionMeasurementsReceived_;
+  
 
   /// @}
   /// @name Measurement operation queues.
@@ -303,9 +313,7 @@ class ThreadedKFVio : public VioInterface {
   /// \brief The IMU measurements.
   /// \warning Lock with imuMeasurements_mutex_.
   okvis::ImuMeasurementDeque imuMeasurements_;
-  /// \brief The Position measurements.
-  /// \warning Lock with positionMeasurements_mutex_.
-  okvis::PositionMeasurementDeque positionMeasurements_;
+  
   /// The queue containing the results of the optimization or IMU propagation ready for publishing.
   okvis::threadsafe::ThreadSafeQueue<OptimizationResults> optimizationResults_;
   /// The queue containing visualization data that is ready to be displayed.
@@ -333,6 +341,7 @@ class ThreadedKFVio : public VioInterface {
 
   /// Threads running the frameConsumerLoop(). One per camera.
   std::vector<std::thread> frameConsumerThreads_;
+  std::thread stereoConsumerThread_;
   std::vector<std::thread> keypointConsumerThreads_;  ///< Threads running matchingLoop().
   std::vector<std::thread> matchesConsumerThreads_;   ///< Unused.
   std::thread imuConsumerThread_;           ///< Thread running imuConsumerLoop().
@@ -349,13 +358,10 @@ class ThreadedKFVio : public VioInterface {
   /// @name Algorithm objects.
   /// @{
 
-#ifdef USE_MOCK
-  okvis::MockVioBackendInterface& estimator_;
-  okvis::MockVioFrontendInterface& frontend_;
-#else
+
   okvis::Estimator estimator_;    ///< The backend estimator.
   okvis::Frontend frontend_;      ///< The frontend.
-#endif
+
 
   /// @}
 
