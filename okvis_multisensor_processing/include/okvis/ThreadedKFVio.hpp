@@ -163,67 +163,7 @@ class ThreadedKFVio : public VioInterface {
                                  const Eigen::Vector3d & alpha,
                                  const Eigen::Vector3d & omega);
 
-  /**
-   * \brief                      Add a position measurement.
-   * \warning Not implemented.
-   * \param stamp                The measurement timestamp.
-   * \param position             The position in world frame.
-   * \param positionOffset       Body frame antenna position offset [m].
-   * \param positionCovariance   The position measurement covariance matrix.
-   */
-  virtual void addPositionMeasurement(
-      const okvis::Time & stamp, const Eigen::Vector3d & position,
-      const Eigen::Vector3d & positionOffset,
-      const Eigen::Matrix3d & positionCovariance);
-
-  /**
-   * \brief                       Add a GPS measurement.
-   * \warning Not implemented.
-   * \param stamp                 The measurement timestamp.
-   * \param lat_wgs84_deg         WGS84 latitude [deg].
-   * \param lon_wgs84_deg         WGS84 longitude [deg].
-   * \param alt_wgs84_deg         WGS84 altitude [m].
-   * \param positionOffset        Body frame antenna position offset [m].
-   * \param positionCovarianceENU The position measurement covariance matrix.
-   */
-  virtual void addGpsMeasurement(const okvis::Time & stamp,
-                                 double lat_wgs84_deg, double lon_wgs84_deg,
-                                 double alt_wgs84_deg,
-                                 const Eigen::Vector3d & positionOffset,
-                                 const Eigen::Matrix3d & positionCovarianceENU);
-
-  /**
-   * \brief                      Add a magnetometer measurement.
-   * \warning Not implemented.
-   * \param stamp                The measurement timestamp.
-   * \param fluxDensityMeas      Measured magnetic flux density (sensor frame) [uT].
-   * \param stdev                Measurement std deviation [uT].
-   */
-  virtual void addMagnetometerMeasurement(
-      const okvis::Time & stamp, const Eigen::Vector3d & fluxDensityMeas,
-      double stdev);
-
-  /**
-   * \brief                      Add a static pressure measurement.
-   * \warning Not implemented.
-   * \param stamp                The measurement timestamp.
-   * \param staticPressure       Measured static pressure [Pa].
-   * \param stdev                Measurement std deviation [Pa].
-   */
-  virtual void addBarometerMeasurement(const okvis::Time & stamp,
-                                       double staticPressure, double stdev);
-
-  /**
-   * \brief                      Add a differential pressure measurement.
-   * \warning Not implemented.
-   * \param stamp                The measurement timestamp.
-   * \param differentialPressure Measured differential pressure [Pa].
-   * \param stdev                Measurement std deviation [Pa].
-   */
-  virtual void addDifferentialPressureMeasurement(const okvis::Time & stamp,
-                                                  double differentialPressure,
-                                                  double stdev);
-
+  
   /// \}
   /// \name Setters
   /// \{
@@ -259,19 +199,7 @@ class ThreadedKFVio : public VioInterface {
   void matchingLoop();
   /// \brief Loop to process IMU measurements.
   void imuConsumerLoop();
-  /// \brief Loop to process position measurements.
-  /// \warning Not implemented.
-  void positionConsumerLoop();
-  /// \brief Loop to process GPS measurements.
-  /// \warning Not implemented.
-  void gpsConsumerLoop();
-  /// \brief Loop to process magnetometer measurements.
-  /// \warning Not implemented.
-  void magnetometerConsumerLoop();
-  /// \brief Loop to process differential pressure measurements.
-  /// \warning Not implemented.
-  void differentialConsumerLoop();
-
+ 
   /// \brief Loop that visualizes completed frames.
   void visualizationLoop();
   /// \brief Loop that performs the optimization and marginalisation.
@@ -408,11 +336,7 @@ class ThreadedKFVio : public VioInterface {
   std::vector<std::thread> keypointConsumerThreads_;  ///< Threads running matchingLoop().
   std::vector<std::thread> matchesConsumerThreads_;   ///< Unused.
   std::thread imuConsumerThread_;           ///< Thread running imuConsumerLoop().
-  std::thread positionConsumerThread_;      ///< Thread running positionConsumerLoop().
-  std::thread gpsConsumerThread_;           ///< Thread running gpsConsumerLoop().
-  std::thread magnetometerConsumerThread_;  ///< Thread running magnetometerConsumerLoop().
-  std::thread differentialConsumerThread_;  ///< Thread running differentialConsumerLoop().
-
+ 
   /// @}
   /// @name Algorithm threads
   /// @{

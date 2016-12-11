@@ -30,6 +30,9 @@ option (BUILD_PLAIN_TESTS
         
 SET(N_CORES 4 CACHE STRING "Using N number of cores for parallel build")
 
+# set compile type
+SET(CMAKE_BUILD_TYPE Debug)  
+
 # Offer the user the choice of overriding the installation directories
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
 set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
@@ -93,22 +96,6 @@ link_directories(${CMAKE_BINARY_DIR}/lib)
 # require Eigen
 find_package( Eigen REQUIRED )
 include_directories(${EIGEN_INCLUDE_DIR}) 
-
-# libvisensor
-find_package(VISensor)
-
-if(VISENSORDRIVER_FOUND)
-  add_definitions(-DHAVE_LIBVISENSOR)
-  set(LIBVISENSOR TRUE)
-  message(STATUS "Found libvisensor. Setting HAVE_LIBVISENSOR flag.")
-  include_directories(${VISensorDriver_INCLUDE_DIR})
-  # install find script
-  install(FILES ${PROJECT_SOURCE_DIR}/cmake/FindVISensor.cmake
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/CMake)
-else()
-  message(STATUS "libvisensor not found")
-endif()
-
 
 
 # glog
@@ -362,9 +349,7 @@ if(BUILD_APPS)
     pthread 
     ${Boost_LIBRARIES}
   )
-  if(${VISENSORDRIVER_FOUND})
-    target_link_libraries(okvis_app_synchronous ${VISensorDriver_LIBRARY})
-  endif()
+ 
   install(TARGETS okvis_app_synchronous
     # IMPORTANT: Add the executable to the "export-set"
     EXPORT okvisTargets
@@ -420,10 +405,7 @@ if(${BUILD_PLAIN_TESTS})
   find_package(Pangolin REQUIRED)
   include_directories(${Pangolin_INCLUDE_DIRS})
   add_executable(testPangolin okvis_test/src/SimpleDisplay/main.cpp)
-  target_link_libraries(testPangolin 
-  
-    ${Pangolin_LIBRARIES}
-  )
+  target_link_libraries(testPangolin    ${Pangolin_LIBRARIES}  )
   
 endif()
 

@@ -94,10 +94,6 @@ int main(int argc, char **argv)
   okvis::pangolinViewer* viewer = new okvis::pangolinViewer();
   okvis_estimator.setPangolinViewer(viewer);
   
-  
- 
-   
-  
   boost::thread viewThread(&okvis::pangolinViewer::Run,viewer);
  
                
@@ -192,6 +188,8 @@ int main(int argc, char **argv)
       if (start == okvis::Time(0.0)) {
         start = t;
       }
+      
+      
 
       // get all IMU measurements till then
       okvis::Time t_imu = start;
@@ -221,10 +219,11 @@ int main(int argc, char **argv)
         }
 
         t_imu = okvis::Time(std::stoi(seconds), std::stoi(nanoseconds));
-
+        
         // add the IMU measurement for (blocking) processing
         if (t_imu - start + okvis::Duration(1.0) > deltaT) {
           okvis_estimator.addImuMeasurement(t_imu, acc, gyr);
+	  std::cout<< "IMU time "<< t_imu<<std::endl;
         }
 
       } while (t_imu <= t);
@@ -232,6 +231,7 @@ int main(int argc, char **argv)
       // add the image to the frontend for (blocking) processing
       if (t - start > deltaT) {
         okvis_estimator.addImage(t, i, filtered);
+	std::cout<< "image time "<<i<<" "<< t<<std::endl;
       }
 
       cam_iterators[i]++;

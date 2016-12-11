@@ -53,15 +53,20 @@ void testReprojectionError_plain(){
 	// Build the problem.
 	::ceres::Problem problem;
 
-	// set up a random geometry
+	// set up a random geometry  
+	// pose
 	std::cout<<"set up a random geometry... "<<std::flush;
 	okvis::kinematics::Transformation T_WS; // world to sensor
 	T_WS.setRandom(10.0,M_PI);
-	okvis::kinematics::Transformation T_disturb;
-	T_disturb.setRandom(1,0.01);
-	okvis::kinematics::Transformation T_WS_init=T_WS*T_disturb; // world to sensor
+	okvis::kinematics::Transformation T_WS_disturb;
+	T_WS_disturb.setRandom(1,0.01);
+	okvis::kinematics::Transformation T_WS_init=T_WS*T_WS_disturb; // world to sensor
+	
+	// extrinsic parameter
 	okvis::kinematics::Transformation T_SC; // sensor to camera
 	T_SC.setRandom(0.2,M_PI);
+	
+	// 设置 姿态和外部参数
 	okvis::ceres::PoseParameterBlock poseParameterBlock(T_WS_init,1,okvis::Time(0));
 	okvis::ceres::PoseParameterBlock extrinsicsParameterBlock(T_SC,2,okvis::Time(0));
 	problem.AddParameterBlock(poseParameterBlock.parameters(),okvis::ceres::PoseParameterBlock::Dimension);
@@ -101,11 +106,13 @@ void testReprojectionError_plain(){
 	  problem.SetParameterBlockConstant(homogeneousPointParameterBlock_ptr->parameters());
 
 	  // get a randomized projection
+	  // 投影
 	  Eigen::Vector2d kp;
 	  cameraGeometry->projectHomogeneous(point,&kp);
 	  kp += Eigen::Vector2d::Random();
 
 	  // Set up the only cost function (also known as residual).
+	  // 构造 cost function
 	  Eigen::Matrix2d information=Eigen::Matrix2d::Identity();
 	  ::ceres::CostFunction* cost_function = new okvis::ceres::ReprojectionError<DistortedPinholeCameraGeometry>(
 			  cameraGeometry,1, kp,information);
@@ -135,6 +142,8 @@ void testReprojectionError_plain(){
 	std::cout << "initial T_WS : " << T_WS_init.T() << "\n"
 			<< "optimized T_WS : " << poseParameterBlock.estimate().T() << "\n"
 			<< "correct T_WS : " << T_WS.T() << "\n";
+      
+       
 
 	// make sure it converged
 	OKVIS_ASSERT_TRUE(Exception,2*(T_WS.q()*poseParameterBlock.estimate().q().inverse()).vec().norm()<1e-2,"quaternions not close enough");

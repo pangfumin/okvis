@@ -134,13 +134,6 @@ void ThreadedKFVio::startThreads() {
     keypointConsumerThreads_.emplace_back(&ThreadedKFVio::matchingLoop, this);
   }
   imuConsumerThread_ = std::thread(&ThreadedKFVio::imuConsumerLoop, this);
-  positionConsumerThread_ = std::thread(&ThreadedKFVio::positionConsumerLoop,
-                                        this);
-  gpsConsumerThread_ = std::thread(&ThreadedKFVio::gpsConsumerLoop, this);
-  magnetometerConsumerThread_ = std::thread(
-      &ThreadedKFVio::magnetometerConsumerLoop, this);
-  differentialConsumerThread_ = std::thread(
-      &ThreadedKFVio::differentialConsumerLoop, this);
 
   // algorithm threads
   visualizationThread_ = std::thread(&ThreadedKFVio::visualizationLoop, this);
@@ -169,10 +162,8 @@ ThreadedKFVio::~ThreadedKFVio() {
     keypointConsumerThreads_.at(i).join();
   }
   imuConsumerThread_.join();
-  positionConsumerThread_.join();
-  gpsConsumerThread_.join();
-  magnetometerConsumerThread_.join();
-  differentialConsumerThread_.join();
+ 
+  
   visualizationThread_.join();
   optimizationThread_.join();
   publisherThread_.join();
@@ -260,52 +251,6 @@ bool ThreadedKFVio::addImuMeasurement(const okvis::Time & stamp,
   }
 }
 
-// Add a position measurement.
-void ThreadedKFVio::addPositionMeasurement(const okvis::Time & stamp,
-                                           const Eigen::Vector3d & position,
-                                           const Eigen::Vector3d & positionOffset,
-                                           const Eigen::Matrix3d & positionCovariance) {
-  okvis::PositionMeasurement position_measurement;
-  position_measurement.measurement.position = position;
-  position_measurement.measurement.positionOffset = positionOffset;
-  position_measurement.measurement.positionCovariance = positionCovariance;
-  position_measurement.timeStamp = stamp;
-
-  if (blocking_) {
-    positionMeasurementsReceived_.PushBlockingIfFull(position_measurement, 1);
-    return;
-  } else {
-    positionMeasurementsReceived_.PushNonBlockingDroppingIfFull(
-        position_measurement, maxPositionInputQueueSize_);
-    return;
-  }
-}
-
-// Add a GPS measurement.
-void ThreadedKFVio::addGpsMeasurement(const okvis::Time &, double, double,
-                                      double, const Eigen::Vector3d &,
-                                      const Eigen::Matrix3d &) {
-  OKVIS_THROW(Exception, "GPS measurements not supported")
-}
-
-// Add a magnetometer measurement.
-void ThreadedKFVio::addMagnetometerMeasurement(const okvis::Time &,
-                                               const Eigen::Vector3d &, double) {
-  OKVIS_THROW(Exception, "Magnetometer measurements not supported")
-}
-
-// Add a static pressure measurement.
-void ThreadedKFVio::addBarometerMeasurement(const okvis::Time &, double, double) {
-
-  OKVIS_THROW(Exception, "Barometer measurements not supported")
-}
-
-// Add a differential pressure measurement.
-void ThreadedKFVio::addDifferentialPressureMeasurement(const okvis::Time &,
-                                                       double, double) {
-
-  OKVIS_THROW(Exception, "Differential pressure measurements not supported")
-}
 
 // Set the blocking variable that indicates whether the addMeasurement() functions
 // should return immediately (blocking=false), or only when the processing is complete.
@@ -466,6 +411,7 @@ void ThreadedKFVio::matchingLoop() {
     std::shared_ptr<okvis::MultiFrame> frame;
 
     // get data and check for termination request
+    // get the data
     if (keypointMeasurements_.PopBlocking(&frame) == false)
       return;
 
@@ -600,33 +546,6 @@ void ThreadedKFVio::imuConsumerLoop() {
     }
     processImuTimer.stop();
   }
-}
-
-// Loop to process position measurements.
-void ThreadedKFVio::positionConsumerLoop() {
-  okvis::PositionMeasurement data;
-  for (;;) {
-    // get data and check for termination request
-    if (positionMeasurementsReceived_.PopBlocking(&data) == false)
-      return;
-    // collect
-    {
-      std::lock_guard<std::mutex> positionLock(positionMeasurements_mutex_);
-      positionMeasurements_.push_back(data);
-    }
-  }
-}
-
-// Loop to process GPS measurements.
-void ThreadedKFVio::gpsConsumerLoop() {
-}
-
-// Loop to process magnetometer measurements.
-void ThreadedKFVio::magnetometerConsumerLoop() {
-}
-
-// Loop to process differential pressure measurements.
-void ThreadedKFVio::differentialConsumerLoop() {
 }
 
 // Loop that visualizes completed frames.
