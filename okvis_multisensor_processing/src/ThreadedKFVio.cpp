@@ -927,9 +927,10 @@ void ThreadedKFVio::publisherLoop() {
        
     }
     
-    if (!result.onlyPublishLandmarks)
+    if (viewer_ != nullptr && !result.onlyPublishLandmarks)
     {
       //
+      
        viewer_->setShowInfo(result.stamp, result.T_WS, result.speedAndBiases,
                          result.omega_S);
     }

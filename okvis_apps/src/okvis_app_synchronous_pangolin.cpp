@@ -90,7 +90,7 @@ int main(int argc, char **argv)
   okvis::ThreadedKFVio okvis_estimator(parameters);
 
  
-  
+  // set a pangolin viewer
   okvis::pangolinViewer* viewer = new okvis::pangolinViewer();
   okvis_estimator.setPangolinViewer(viewer);
   

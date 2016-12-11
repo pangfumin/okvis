@@ -60,13 +60,10 @@
 #include <okvis/threadsafe/ThreadsafeQueue.hpp>
 
 #include <okvis/pangolinViewer.hpp>
-#ifdef USE_MOCK
-#include <../test/MockVioFrontendInterface.hpp>
-#include <../test/MockVioBackendInterface.hpp>
-#else
+
 #include <okvis/Estimator.hpp>
 #include <okvis/VioFrontendInterface.hpp>
-#endif
+
 
 /// \brief okvis Main namespace of this package.
 namespace okvis {
@@ -326,7 +323,7 @@ class ThreadedKFVio : public VioInterface {
   /// @{
 
   std::mutex imuMeasurements_mutex_;      ///< Lock when accessing imuMeasurements_
-  std::mutex positionMeasurements_mutex_;      ///< Lock when accessing imuMeasurements_
+ 
   std::mutex frameSynchronizer_mutex_;    ///< Lock when accessing the frameSynchronizer_.
   std::mutex estimator_mutex_;            ///< Lock when accessing the estimator_.
   ///< Condition variable to signalise that optimization is done.
