@@ -31,7 +31,7 @@ option (BUILD_PLAIN_TESTS
 SET(N_CORES 4 CACHE STRING "Using N number of cores for parallel build")
 
 # set compile type
-SET(CMAKE_BUILD_TYPE Debug)  
+#SET(CMAKE_BUILD_TYPE Debug)  
 
 # Offer the user the choice of overriding the installation directories
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
