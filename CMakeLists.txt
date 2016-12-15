@@ -382,6 +382,9 @@ if(BUILD_APPS)
     ${Boost_LIBRARIES}
     ${Pangolin_LIBRARIES}
   )
+
+
+ 
      
 
 endif()

@@ -124,9 +124,25 @@ TARGET_LINK_LIBRARIES(svo
   okvis_multisensor_processing
 )
 
+
+ADD_EXECUTABLE(main src/main.cpp)
+TARGET_LINK_LIBRARIES(main 
+  svo
+  okvis_util
+  okvis_kinematics
+  okvis_time
+  okvis_cv 
+  okvis_common
+  okvis_ceres
+  okvis_timing
+  okvis_matcher
+  okvis_frontend 
+  okvis_multisensor_processing
+)
+
 ################################################################################
 # TESTS
-
+if (0)
 ADD_EXECUTABLE(test_feature_align test/test_feature_alignment.cpp)
 TARGET_LINK_LIBRARIES(test_feature_align svo)
 
@@ -147,3 +163,5 @@ TARGET_LINK_LIBRARIES(test_sparse_img_align svo)
 
 ADD_EXECUTABLE(test_pose_optimizer test/test_pose_optimizer.cpp)
 TARGET_LINK_LIBRARIES(test_pose_optimizer svo) 
+
+endif()
