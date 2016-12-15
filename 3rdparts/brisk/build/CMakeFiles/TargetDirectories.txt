@@ -1,0 +1,3 @@
+/home/pang/software/okvis/3rdparts/brisk/build/agast/CMakeFiles/agast.dir
+/home/pang/software/okvis/3rdparts/brisk/build/CMakeFiles/brisk.dir
+/home/pang/software/okvis/3rdparts/brisk/build/CMakeFiles/demo.dir

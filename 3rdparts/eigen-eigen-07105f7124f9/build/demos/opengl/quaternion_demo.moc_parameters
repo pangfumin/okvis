@@ -1,0 +1,13 @@
+-I/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9
+-I/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build
+-I/usr/include/qt4
+-I/usr/include/qt4/QtOpenGL
+-I/usr/include/qt4/QtGui
+-I/usr/include/qt4/QtCore
+-I/usr/include/qt4
+-DQT_OPENGL_LIB
+-DQT_GUI_LIB
+-DQT_CORE_LIB
+-o
+/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/demos/opengl/quaternion_demo.moc
+/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/demos/opengl/quaternion_demo.h

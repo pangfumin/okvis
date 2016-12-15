@@ -226,6 +226,33 @@ requests. But questions that can be answered reading this document will be
 ignored. Please contact s.leutenegger@imperial.ac.uk.
 
 
-### Modified  by pangfumin
+### Modified  by Pang fumin
 
 To avoiding re-downloading some thirdpart lib ,some hard code is add to CMakeLists.txt.
+
+1. Create dirs for 3rd part libs: 3rdparts 3rdlib_install 
+2. Download 3rd part software in 3rdparts
+   * download ceres-solver 
+     checkout 7c57de5080c9f5a4f067e2d20b5f33bad5b1ade6
+     cmake ..   -DCMAKE_INSTALL_PREFIX:PATH= your path to  /okvis/3rdlib_install
+     sudo make install
+
+   * download brisk-2.0.3 from    https://www.doc.ic.ac.uk/~sleutene/software/brisk-2.0.3.zip
+   cmake ..   -DCMAKE_INSTALL_PREFIX:PATH= your path to  /okvis/3rdlib_install
+sudo make install
+   * download OpenGV and checkout cc32b16281aa6eab67cb28a61cf87a2a5c2b0961
+    cmake ..   -DCMAKE_INSTALL_PREFIX:PATH= your path to  /okvis/3rdlib_install
+sudo make install
+     Need to modify some hard code in CMakeList.txt to locate OpenGV.
+
+   * download eigen 3.2.8 (For Ceres depedency)
+   cmake ..   -DCMAKE_INSTALL_PREFIX:PATH= your path to  /okvis/3rdlib_install
+sudo make install
+
+
+3. Build okvis
+   cmake .. -DCMAKE_PREFIX_PATH:PATH=yout path to/okvis/3rdlib_install
+
+   
+   
+

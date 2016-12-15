@@ -1,0 +1,1 @@
+/usr/bin/gfortran     -O3 CMakeFiles/zblat2.dir/zblat2.f.o  -o zblat2 -rdynamic ../libeigen_blas.so -Wl,-rpath,/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/blas 

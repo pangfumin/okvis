@@ -1,0 +1,160 @@
+Performing C++ SOURCE FILE Test COMPILER_SUPPORT_wd981 failed with the following output:
+Change Dir: /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec357436701/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec357436701.dir/build.make CMakeFiles/cmTryCompileExec357436701.dir/build
+make[1]: Entering directory `/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec357436701.dir/src.cxx.o
+/usr/bin/c++    -fexceptions -pedantic -Wall -Wextra -Wundef -Wcast-align -Wchar-subscripts -Wnon-virtual-dtor -Wunused-local-typedefs -Wpointer-arith -Wwrite-strings -Wformat-security -Wno-psabi -Wno-variadic-macros -Wno-long-long -fno-check-new -fno-common -fstrict-aliasing -DCOMPILER_SUPPORT_wd981 -Werror   -wd981 -o CMakeFiles/cmTryCompileExec357436701.dir/src.cxx.o -c /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/src.cxx
+c++: error: unrecognized command line option '-wd981'
+make[1]: *** [CMakeFiles/cmTryCompileExec357436701.dir/src.cxx.o] Error 1
+make[1]: Leaving directory `/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp'
+make: *** [cmTryCompileExec357436701/fast] Error 2
+
+Source file was:
+int main() { return 0;}
+Performing C++ SOURCE FILE Test COMPILER_SUPPORT_wd2304 failed with the following output:
+Change Dir: /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec2665038414/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec2665038414.dir/build.make CMakeFiles/cmTryCompileExec2665038414.dir/build
+make[1]: Entering directory `/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec2665038414.dir/src.cxx.o
+/usr/bin/c++    -fexceptions -pedantic -Wall -Wextra -Wundef -Wcast-align -Wchar-subscripts -Wnon-virtual-dtor -Wunused-local-typedefs -Wpointer-arith -Wwrite-strings -Wformat-security -Wno-psabi -Wno-variadic-macros -Wno-long-long -fno-check-new -fno-common -fstrict-aliasing -DCOMPILER_SUPPORT_wd2304 -Werror   -wd2304 -o CMakeFiles/cmTryCompileExec2665038414.dir/src.cxx.o -c /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/src.cxx
+c++: error: unrecognized command line option '-wd2304'
+make[1]: *** [CMakeFiles/cmTryCompileExec2665038414.dir/src.cxx.o] Error 1
+make[1]: Leaving directory `/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp'
+make: *** [cmTryCompileExec2665038414/fast] Error 2
+
+Source file was:
+int main() { return 0;}
+Performing C++ SOURCE FILE Test COMPILER_SUPPORT_STRICTANSI failed with the following output:
+Change Dir: /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec2154312646/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec2154312646.dir/build.make CMakeFiles/cmTryCompileExec2154312646.dir/build
+make[1]: Entering directory `/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec2154312646.dir/src.cxx.o
+/usr/bin/c++    -fexceptions -pedantic -Wall -Wextra -Wundef -Wcast-align -Wchar-subscripts -Wnon-virtual-dtor -Wunused-local-typedefs -Wpointer-arith -Wwrite-strings -Wformat-security -Wno-psabi -Wno-variadic-macros -Wno-long-long -fno-check-new -fno-common -fstrict-aliasing -DCOMPILER_SUPPORT_STRICTANSI -Werror   -strict-ansi -o CMakeFiles/cmTryCompileExec2154312646.dir/src.cxx.o -c /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/src.cxx
+c++: error: unrecognized command line option '-strict-ansi'
+make[1]: *** [CMakeFiles/cmTryCompileExec2154312646.dir/src.cxx.o] Error 1
+make[1]: Leaving directory `/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp'
+make: *** [cmTryCompileExec2154312646/fast] Error 2
+
+Source file was:
+int main() { return 0;}
+Performing C++ SOURCE FILE Test COMPILER_SUPPORT_Qunusedarguments failed with the following output:
+Change Dir: /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec194898933/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec194898933.dir/build.make CMakeFiles/cmTryCompileExec194898933.dir/build
+make[1]: Entering directory `/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec194898933.dir/src.cxx.o
+/usr/bin/c++    -fexceptions -pedantic -Wall -Wextra -Wundef -Wcast-align -Wchar-subscripts -Wnon-virtual-dtor -Wunused-local-typedefs -Wpointer-arith -Wwrite-strings -Wformat-security -Wno-psabi -Wno-variadic-macros -Wno-long-long -fno-check-new -fno-common -fstrict-aliasing -DCOMPILER_SUPPORT_Qunusedarguments -Werror   -Qunused-arguments -o CMakeFiles/cmTryCompileExec194898933.dir/src.cxx.o -c /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/src.cxx
+c++: error: unrecognized command line option '-Qunused-arguments'
+make[1]: *** [CMakeFiles/cmTryCompileExec194898933.dir/src.cxx.o] Error 1
+make[1]: Leaving directory `/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp'
+make: *** [cmTryCompileExec194898933/fast] Error 2
+
+Source file was:
+int main() { return 0;}
+Determining if the Q_WS_WIN exist failed with the following output:
+Change Dir: /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec3558325183/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec3558325183.dir/build.make CMakeFiles/cmTryCompileExec3558325183.dir/build
+make[1]: Entering directory `/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec3558325183.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++    -fexceptions -pedantic -Wall -Wextra -Wundef -Wcast-align -Wchar-subscripts -Wnon-virtual-dtor -Wunused-local-typedefs -Wpointer-arith -Wwrite-strings -Wformat-security -Wno-psabi -Wno-variadic-macros -Wno-long-long -fno-check-new -fno-common -fstrict-aliasing -ansi -O1 -g1  -I/usr/include/qt4    -o CMakeFiles/cmTryCompileExec3558325183.dir/CheckSymbolExists.cxx.o -c /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx: In function ‘int main(int, char**)’:
+/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: error: ‘Q_WS_WIN’ was not declared in this scope
+   return ((int*)(&Q_WS_WIN))[argc];
+                   ^
+make[1]: *** [CMakeFiles/cmTryCompileExec3558325183.dir/CheckSymbolExists.cxx.o] Error 1
+make[1]: Leaving directory `/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp'
+make: *** [cmTryCompileExec3558325183/fast] Error 2
+
+File /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <QtCore/qglobal.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef Q_WS_WIN
+  return ((int*)(&Q_WS_WIN))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the Q_WS_QWS exist failed with the following output:
+Change Dir: /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec242495876/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec242495876.dir/build.make CMakeFiles/cmTryCompileExec242495876.dir/build
+make[1]: Entering directory `/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec242495876.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++    -fexceptions -pedantic -Wall -Wextra -Wundef -Wcast-align -Wchar-subscripts -Wnon-virtual-dtor -Wunused-local-typedefs -Wpointer-arith -Wwrite-strings -Wformat-security -Wno-psabi -Wno-variadic-macros -Wno-long-long -fno-check-new -fno-common -fstrict-aliasing -ansi -O1 -g1  -I/usr/include/qt4    -o CMakeFiles/cmTryCompileExec242495876.dir/CheckSymbolExists.cxx.o -c /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx: In function ‘int main(int, char**)’:
+/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: error: ‘Q_WS_QWS’ was not declared in this scope
+   return ((int*)(&Q_WS_QWS))[argc];
+                   ^
+make[1]: *** [CMakeFiles/cmTryCompileExec242495876.dir/CheckSymbolExists.cxx.o] Error 1
+make[1]: Leaving directory `/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp'
+make: *** [cmTryCompileExec242495876/fast] Error 2
+
+File /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <QtCore/qglobal.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef Q_WS_QWS
+  return ((int*)(&Q_WS_QWS))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the Q_WS_MAC exist failed with the following output:
+Change Dir: /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec1885780097/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec1885780097.dir/build.make CMakeFiles/cmTryCompileExec1885780097.dir/build
+make[1]: Entering directory `/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec1885780097.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++    -fexceptions -pedantic -Wall -Wextra -Wundef -Wcast-align -Wchar-subscripts -Wnon-virtual-dtor -Wunused-local-typedefs -Wpointer-arith -Wwrite-strings -Wformat-security -Wno-psabi -Wno-variadic-macros -Wno-long-long -fno-check-new -fno-common -fstrict-aliasing -ansi -O1 -g1  -I/usr/include/qt4    -o CMakeFiles/cmTryCompileExec1885780097.dir/CheckSymbolExists.cxx.o -c /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx: In function ‘int main(int, char**)’:
+/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: error: ‘Q_WS_MAC’ was not declared in this scope
+   return ((int*)(&Q_WS_MAC))[argc];
+                   ^
+make[1]: *** [CMakeFiles/cmTryCompileExec1885780097.dir/CheckSymbolExists.cxx.o] Error 1
+make[1]: Leaving directory `/home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp'
+make: *** [cmTryCompileExec1885780097/fast] Error 2
+
+File /home/pang/software/okvis/3rdparts/eigen-eigen-07105f7124f9/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <QtCore/qglobal.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef Q_WS_MAC
+  return ((int*)(&Q_WS_MAC))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
