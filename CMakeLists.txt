@@ -207,9 +207,9 @@ endif()
 
 # OpenGV
 
-if(${HAS_BUILD_OPENGV})  # using absolute path
-SET(OpenGV_INCLUDE_DIRS $ENV{HOME}/software/okvis/3rdlib_install/include)
-SET(OpenGV_LIBRARIES $ENV{HOME}/software/okvis/3rdlib_install/lib/libopengv.a)
+if(${HAS_BUILD_OPENGV})  # using relative path
+SET(OpenGV_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/3rdlib_install/include)
+SET(OpenGV_LIBRARIES ${PROJECT_SOURCE_DIR}/3rdlib_install/lib/libopengv.a)
 else()
 
 set(CMAKE_CXX_FLAGS_WSUPPRESS 
@@ -328,6 +328,12 @@ endif()
 include_directories(okvis_multisensor_processing/include)
 add_subdirectory(okvis_multisensor_processing)
 add_dependencies(okvis_multisensor_processing okvis_util)
+
+
+include_directories(svo/include)
+add_subdirectory(svo)
+#add_dependencies(okvis_multisensor_processing okvis_util)
+
 
 
 # also build the apps

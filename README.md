@@ -248,10 +248,17 @@ sudo make install
    * download eigen 3.2.8 (For Ceres depedency)
    cmake ..   -DCMAKE_INSTALL_PREFIX:PATH= your path to  /okvis/3rdlib_install
 sudo make install
+   * download Sophus from https://github.com/strasdat/Sophus.git
+     checkout a621ff 
+     cmake ..   -DCMAKE_INSTALL_PREFIX:PATH= your path to  /okvis/3rdlib_install
+sudo make install
+      
 
 
 3. Build okvis
    cmake .. -DCMAKE_PREFIX_PATH:PATH=yout path to/okvis/3rdlib_install
+
+
 
    
    
