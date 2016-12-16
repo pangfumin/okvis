@@ -21,6 +21,7 @@
 #include <svo/feature.h>
 #include <boost/bind.hpp>
 
+
 namespace svo {
 
 Map::Map() {}

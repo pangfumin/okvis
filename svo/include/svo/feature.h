@@ -33,8 +33,10 @@ struct Feature
 
   FeatureType type;     //!< Type can be corner or edgelet.
   Frame* frame;         //!< Pointer to frame in which the feature was detected.
+  // 包括2d点，和归一化的3dfeature
   Vector2d px;          //!< Coordinates in pixels on pyramid level 0.
   Vector3d f;           //!< Unit-bearing vector of the feature.   // f = [(u-ox)/fx , (v-oy)/fy , 1] ;  f * depth --> [x , y , z] : 3d 坐标in this frame
+  
   int level;            //!< Image pyramid level where feature was extracted.
   Point* point;         //!< Pointer to 3D point which corresponds to the feature.
   Vector2d grad;        //!< Dominant gradient direction for edglets, normalized.

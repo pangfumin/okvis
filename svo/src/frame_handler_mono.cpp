@@ -95,6 +95,8 @@ FrameHandlerMono::UpdateResult FrameHandlerMono::processFirstFrame()
   if(klt_homography_init_.addFirstFrame(new_frame_) == initialization::FAILURE)
     return RESULT_NO_KEYFRAME;
   new_frame_->setKeyframe();
+  
+  // 第一帧图像加入到 keyframe中
   map_.addKeyframe(new_frame_);
   stage_ = STAGE_SECOND_FRAME;
   SVO_INFO_STREAM("Init: Selected first frame.");

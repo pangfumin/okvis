@@ -111,8 +111,8 @@ void KltHomographyInit::reset()
 
 void detectFeatures(
     FramePtr frame,
-    vector<cv::Point2f>& px_vec,
-    vector<Vector3d>& f_vec)
+    vector<cv::Point2f>& px_vec,  // pixel
+    vector<Vector3d>& f_vec)  // 3d
 {
   Features new_features;
   feature_detection::FastDetector detector(
@@ -158,6 +158,8 @@ void trackKlt(
   disparities.clear(); disparities.reserve(px_cur.size());
   for(size_t i=0; px_ref_it != px_ref.end(); ++i)
   {
+    
+    // 对于不匹配的点 擦出掉
     if(!status[i])
     {
       px_ref_it = px_ref.erase(px_ref_it);
@@ -192,6 +194,7 @@ void computeHomography(
   vk::Homography Homography(uv_ref, uv_cur, focal_length, reprojection_threshold);
   Homography.computeSE3fromMatches();
   vector<int> outliers;
+  // 计算homography 并且计算深度
   vk::computeInliers(f_cur, f_ref,
                      Homography.T_c2_from_c1.rotation_matrix(), Homography.T_c2_from_c1.translation(),
                      reprojection_threshold, focal_length,
