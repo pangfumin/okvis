@@ -180,6 +180,8 @@ void FrameHandlerBase::optimizeStructure(
     size_t max_n_pts,
     int max_iter)
 {
+  
+  // 获取这个frame中的points 进行 structure BA
   deque<Point*> pts;
   for(Features::iterator it=frame->fts_.begin(); it!=frame->fts_.end(); ++it)
   {

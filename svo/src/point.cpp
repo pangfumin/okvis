@@ -71,6 +71,7 @@ Feature* Point::findFrameRef(Frame* frame)
   return NULL;    // no keyframe found
 }
 
+// 从这个点的众多obs中擦出指定的frame
 bool Point::deleteFrameRef(Frame* frame)
 {
   for(auto it=obs_.begin(), ite=obs_.end(); it!=ite; ++it)
@@ -132,7 +133,7 @@ void Point::optimize(const size_t n_iter)
     A.setZero();
     b.setZero();
     double new_chi2 = 0.0;
-
+    // 将这个point 投影到所有看见他的frame中，进行BA
     // compute residuals
     for(auto it=obs_.begin(); it!=obs_.end(); ++it)
     {

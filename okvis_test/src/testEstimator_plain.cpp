@@ -49,9 +49,23 @@
 #include <okvis/assert_macros.hpp>
 
 
-void testEstimator_plain(){
-  //srand((unsigned int) time(0)); // disabled: make unit tests deterministic...
 
+// estimator 重要的 API
+/*
+ * addCamera camera 参数
+ * andImu 添加 imu 参数
+ * addLandmark 添加 路标点
+ * addState 添加 机器人姿态 SpeedAndBias 和 imu reading
+ * addObservation 添加 视觉 measurement
+ * 
+ * estimator 就是为了创建 map 并解决这个 BA 问题
+ * 而 map 有相当于重新封装了一个类似与 ceres：：problem 的东西
+ */
+void testEstimator_plain(){
+  
+  
+  //srand((unsigned int) time(0)); // disabled: make unit tests deterministic...
+  //  生成 四个不同的 test case 每一个 case 对应一种 camera的外部参数
   // different cases of camera extrinsics;
   for (size_t c = 0; c < 4; ++c) {
 
@@ -76,11 +90,13 @@ void testEstimator_plain(){
     imuParameters.sigma_bg = 0.03;
     imuParameters.tau = 3600.0;
     std::cout << "case " << c % 2 << ", " << c / 2 << std::endl;
-
+    
+    // 生成简单的运动，以此来生成 imu reading
     // let's generate a really stupid motion: constant translation
     okvis::SpeedAndBias speedAndBias;
     speedAndBias.setZero();
-    speedAndBias.head<3>() = Eigen::Vector3d(0, 1, 0);
+    speedAndBias.head<3>() = Eigen::Vector3d(0, 1, 0); // 固定速度
+    
     okvis::ImuMeasurementDeque imuMeasurements;
     okvis::ImuSensorReadings nominalImuSensorReadings(
         Eigen::Vector3d::Zero(), Eigen::Vector3d(0, 0, imuParameters.g));
@@ -94,7 +110,9 @@ void testEstimator_plain(){
           okvis::ImuMeasurement(t0 + okvis::Duration(DT * i),
                                 okvis::ImuSensorReadings(gyr, acc)));
     }
-
+    
+    // 生成 map map中包含了进行 BA的全部元素
+    // 整个 estimator 的任务 就是构建这个map 让后求解 ba
     // create the map
     std::shared_ptr<okvis::ceres::Map> mapPtr(new okvis::ceres::Map);
 
@@ -131,7 +149,9 @@ void testEstimator_plain(){
 
     // create an Estimator
     okvis::Estimator estimator(mapPtr);
-
+    
+    
+    // 生成 landmark
     // create landmark grid
     const okvis::kinematics::Transformation T_WS_0;
     std::vector<Eigen::Vector4d,
@@ -149,12 +169,16 @@ void testEstimator_plain(){
     estimator.addCamera(extrinsicsEstimationParameters);
     estimator.addCamera(extrinsicsEstimationParameters);
     estimator.addImu(imuParameters);
-
+    
+    
+    // 生成6组 camera 图像
     const size_t K = 6;
     uint64_t id = -1;
     okvis::kinematics::Transformation T_WS_est;
     okvis::SpeedAndBias speedAndBias_est;
     for (size_t k = 0; k < K + 1; ++k) {
+      
+      // 依次移动相机
       // calculate the transformation
       okvis::kinematics::Transformation T_WS(
           T_WS_0.r() + speedAndBias.head<3>() * double(k) * DURATION / double(K),
@@ -170,13 +194,18 @@ void testEstimator_plain(){
 
       // add frames
       mf->resetCameraSystemAndFrames(*cameraSystem);
-
+      
+      
+      // 将相机pose 以及只之间的imu reading 添加道 estimator中
       // add it in the window to create a new time instance
       estimator.addStates(mf, imuMeasurements, k % 3 == 0);
       std::cout << "Frame " << k << " successfully added." << std::endl;
-
+      
+      
       estimator.get_T_WS(mf->id(), T_WS_est);
-
+      
+      
+      // 添加 视觉 观测
       // now let's add also landmark observations
       std::vector<cv::KeyPoint> keypoints;
       for (size_t j = 0; j < homogeneousPoints.size(); ++j) {
@@ -203,9 +232,14 @@ void testEstimator_plain(){
           }
         }
       }
+      
+      // 
       // run the optimization
       estimator.optimize(10, 4, false);
     }
+    
+    
+    // 进行 marginalization
     std::cout << "== TRY MARGINALIZATION ==" << std::endl;
     // try out the marginalization strategy
     okvis::MapPointVector removedLandmarks;

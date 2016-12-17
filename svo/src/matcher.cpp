@@ -30,6 +30,8 @@ namespace svo {
 
 namespace warp {
 
+  
+// 获得 Affine 矩阵，这个矩阵和 camera的参数和相互之间的位置关系有关
 void getWarpMatrixAffine(
     const vk::AbstractCamera& cam_ref,
     const vk::AbstractCamera& cam_cur,

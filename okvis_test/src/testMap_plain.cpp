@@ -85,6 +85,8 @@ void testMap_plain()
           DistortedPinholeCameraGeometry::createTestObject());
   std::cout << " [ OK ] " << std::endl;
 
+  
+  // 添加 landmark 加入 parameter block
   // get some random points and build error terms
   const size_t N = 1000;
 

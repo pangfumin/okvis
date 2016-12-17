@@ -195,6 +195,6 @@ int main(int argc, char** argv)
 {
   MatcherTest test;
   test.testEpipolarSearchFullImg();
-//  test.testWarpAffine();
+  test.testWarpAffine();
   return 0;
 }

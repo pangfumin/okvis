@@ -76,7 +76,11 @@ void Frame::setKeyPoints()
       if(key_pts_[i]->point == NULL)
         key_pts_[i] = NULL;
 
-  std::for_each(fts_.begin(), fts_.end(), [&](Feature* ftr){ if(ftr->point != NULL) checkKeyPoints(ftr); });
+  std::for_each(fts_.begin(), fts_.end(), [&](Feature* ftr){ 
+    if(ftr->point != NULL) 
+      checkKeyPoints(ftr); 
+    
+  });
 }
 
 void Frame::checkKeyPoints(Feature* ftr)

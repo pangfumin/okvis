@@ -103,7 +103,7 @@ void FastDetector::detect(
         corners.at(k) = Corner(xy.x*scale, xy.y*scale, score, L, 0.0f);
     }
   }
-
+   // 记录了在那一 keyframe中被提取
   // Create feature for every corner that has high enough corner score
   std::for_each(corners.begin(), corners.end(), [&](Corner& c) {
     if(c.score > detection_threshold)

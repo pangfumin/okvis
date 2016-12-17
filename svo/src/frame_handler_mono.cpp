@@ -44,6 +44,8 @@ void FrameHandlerMono::initialize()
   feature_detection::DetectorPtr feature_detector(
       new feature_detection::FastDetector(
           cam_->width(), cam_->height(), Config::gridSize(), Config::nPyrLevels()));
+  
+  
   DepthFilter::callback_t depth_filter_cb = boost::bind(
       &MapPointCandidates::newCandidatePoint, &map_.point_candidates_, _1, _2);
   depth_filter_ = new DepthFilter(feature_detector, depth_filter_cb);
@@ -206,7 +208,7 @@ FrameHandlerBase::UpdateResult FrameHandlerMono::processFrame()
   // new keyframe selected
   for(Features::iterator it=new_frame_->fts_.begin(); it!=new_frame_->fts_.end(); ++it)
     if((*it)->point != NULL)
-      (*it)->point->addFrameRef(*it);
+      (*it)->point->addFrameRef(*it);  
   map_.point_candidates_.addCandidatePointToFrame(new_frame_);//
 
   // optional bundle adjustment
@@ -230,6 +232,9 @@ FrameHandlerBase::UpdateResult FrameHandlerMono::processFrame()
   // init new depth-filters
   depth_filter_->addKeyframe(new_frame_, depth_mean, 0.5*depth_min);
 
+  
+  // 控制keyframe的数量，把最远的keyframe丢弃  应该可以参考 okvis的做法
+  // 同时删掉和他相关的内容
   // if limited number of keyframes, remove the one furthest apart
   if(Config::maxNKfs() > 2 && map_.size() >= Config::maxNKfs())
   {

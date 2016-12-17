@@ -170,7 +170,7 @@ bool Reprojector::reprojectCell(Cell& cell, FramePtr frame)
       it = cell.erase(it);
       continue;
     }
-
+    // 搜索 好的匹配 relax feature的位置
     bool found_match = true;
     if(options_.find_match_direct)
       found_match = matcher_.findMatchDirect(*it->pt, *frame, it->px);

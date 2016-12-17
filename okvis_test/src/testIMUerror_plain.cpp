@@ -131,7 +131,9 @@ void testIMUError(){
 	okvis::kinematics::Transformation T_WS_1;
 	okvis::SpeedAndBias speedAndBias_1;
 	okvis::Time t_1;
-
+     
+	
+	// 生成 imu reading 以及两个 pose的真值
 	for(size_t i=0; i<size_t(duration*imuParameters.rate); ++i){
 	  double time = double(i)/imuParameters.rate;
 	  if (i==10){ // set this as starting pose
@@ -185,6 +187,8 @@ void testIMUError(){
 	  imuMeasurements.push_back(okvis::ImuMeasurement(okvis::Time(time),okvis::ImuSensorReadings(gyr,acc)));
 	}
 
+	
+	// 生成 pose 参数 block
 	// create the pose parameter blocks
 	okvis::kinematics::Transformation T_disturb;
 	T_disturb.setRandom(1,0.02);
@@ -194,13 +198,17 @@ void testIMUError(){
 	problem.AddParameterBlock(poseParameterBlock_0.parameters(),okvis::ceres::PoseParameterBlock::Dimension);
 	problem.AddParameterBlock(poseParameterBlock_1.parameters(),okvis::ceres::PoseParameterBlock::Dimension);
 	//problem.SetParameterBlockConstant(poseParameterBlock_0.parameters());
-
+         
+	
+	// 添加 SpeedAndBias 参数 block
 	// create the speed and bias
 	okvis::ceres::SpeedAndBiasParameterBlock speedAndBiasParameterBlock_0(speedAndBias_0,1,t_0);
 	okvis::ceres::SpeedAndBiasParameterBlock speedAndBiasParameterBlock_1(speedAndBias_1,3,t_1);
 	problem.AddParameterBlock(speedAndBiasParameterBlock_0.parameters(),okvis::ceres::SpeedAndBiasParameterBlock::Dimension);
 	problem.AddParameterBlock(speedAndBiasParameterBlock_1.parameters(),okvis::ceres::SpeedAndBiasParameterBlock::Dimension);
-
+        
+	
+	// 添加 local parameter
 	// let's use our own local quaternion perturbation
 	std::cout<<"setting local parameterization for pose... "<<std::flush;
 	::ceres::LocalParameterization* poseLocalParameterization2d = new okvis::ceres::PoseLocalParameterization2d;
@@ -209,12 +217,14 @@ void testIMUError(){
 	problem.SetParameterization(poseParameterBlock_1.parameters(),poseLocalParameterization);
 	std::cout<<" [ OK ] "<<std::endl;
 
+	
+	//  添加 costfunction
 	// create the Imu error term
 	okvis::ceres::ImuError* cost_function_imu = new okvis::ceres::ImuError(imuMeasurements, imuParameters,t_0, t_1);
 	problem.AddResidualBlock(cost_function_imu, NULL,
 		  poseParameterBlock_0.parameters(), speedAndBiasParameterBlock_0.parameters(),
 		  poseParameterBlock_1.parameters(), speedAndBiasParameterBlock_1.parameters());
-
+        // 增加 两头 两个pose 和 SpeedAndBias 的先验信息
 	// let's also add some priors to check this alongside
 	::ceres::CostFunction* cost_function_pose = new okvis::ceres::PoseError(T_WS_0, 1e-12, 1e-4); // pose prior...
 	problem.AddResidualBlock(cost_function_pose, NULL,poseParameterBlock_0.parameters());

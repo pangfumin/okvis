@@ -102,7 +102,9 @@ public:
 
   /// Add new keyframe to the queue
   void addKeyframe(FramePtr frame, double depth_mean, double depth_min);
-
+   
+  
+  // 删除 keyframe 把和他相关联的seed都删掉
   /// Remove all seeds which are initialized from the specified keyframe. This
   /// function is used to make sure that no seeds points to a non-existent frame
   /// when a frame is removed from the map.
@@ -137,6 +139,8 @@ public:
 protected:
   feature_detection::DetectorPtr feature_detector_;
   callback_t seed_converged_cb_;
+  
+  // 每一个keyframe都包含一些 seed
   std::list<Seed, aligned_allocator<Seed> > seeds_;
   boost::mutex seeds_mut_;
   bool seeds_updating_halt_;            //!< Set this value to true when seeds updating should be interrupted.

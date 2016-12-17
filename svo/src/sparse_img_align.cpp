@@ -57,7 +57,7 @@ size_t SparseImgAlign::run(FramePtr ref_frame, FramePtr cur_frame)
   visible_fts_.resize(ref_patch_cache_.rows, false); // TODO: should it be reset at each level?
 
   SE3 T_cur_from_ref(cur_frame_->T_f_w_ * ref_frame_->T_f_w_.inverse());
-
+   // 在各个层优化 coarse-to-fine 的策略， 从最高层到最底层
   for(level_=max_level_; level_>=min_level_; --level_)
   {
     mu_ = 0.1;
@@ -177,6 +177,7 @@ double SparseImgAlign::computeResiduals(
       continue;
 
     // compute pixel location in cur img
+    // 计算 反投影的当前图像中的位置，计算当前帧与上一阵图像的灰度差
     const double depth = ((*it)->point->pos_ - ref_pos).norm();
     const Vector3d xyz_ref((*it)->f*depth);
     const Vector3d xyz_cur(T_cur_from_ref * xyz_ref);
@@ -225,6 +226,7 @@ double SparseImgAlign::computeResiduals(
         if(linearize_system)
         {
           // compute Jacobian, weighted Hessian and weighted "steepest descend images" (times error)
+	  // 计算 weighted Hession matrix
           const Vector6d J(jacobian_cache_.col(feature_counter*patch_area_ + pixel_counter));
           H_.noalias() += J*J.transpose()*weight;
           Jres_.noalias() -= J*res*weight;

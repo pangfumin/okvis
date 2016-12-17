@@ -111,7 +111,7 @@ public:
       const Point& pt,
       const Frame& frame,
       Vector2d& px_cur);
-
+  // 搜索，返回深度
   /// Find a match by searching along the epipolar line without using any features.
   bool findEpipolarMatchDirect(
       const Frame& ref_frame,

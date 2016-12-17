@@ -52,8 +52,10 @@ void optimizeGaussNewton(
       continue;
 	// it->f : 特征的位置
 	// (*it)->point->pos_ : 三维点位置
-    Vector2d e = vk::project2d((*it)->f)
-               - vk::project2d(frame->T_f_w_ * (*it)->point->pos_);
+    
+    // 计算 error
+    Vector2d e = vk::project2d((*it)->f)  // 图像中特征点的位置
+               - vk::project2d(frame->T_f_w_ * (*it)->point->pos_);  // 投影之后的位置
     e *= 1.0 / (1<<(*it)->level);
     errors.push_back(e.norm());
   }
@@ -81,8 +83,12 @@ void optimizeGaussNewton(
     {
       if((*it)->point == NULL)
         continue;
+      
+      
+      // 计算 jacobian 和 error
       Matrix26d J;
       Vector3d xyz_f(frame->T_f_w_ * (*it)->point->pos_);
+      // 计算 jacobian
       Frame::jacobian_xyz2uv(xyz_f, J);
       Vector2d e = vk::project2d((*it)->f) - vk::project2d(xyz_f);
       double sqrt_inv_cov = 1.0 / (1<<(*it)->level);
@@ -93,6 +99,8 @@ void optimizeGaussNewton(
       double weight = weight_function.value(e.norm()/scale);
       A.noalias() += J.transpose()*J*weight;
       b.noalias() -= J.transpose()*e*weight;
+      
+      // 计算 chi2 分布
       new_chi2 += e.squaredNorm()*weight;
     }
 

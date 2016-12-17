@@ -33,6 +33,8 @@ using namespace svo;
 using namespace Eigen;
 
 /// Pose Optimizer Test-Fixture
+
+// Pose-only BA
 class PoseOptimizerTest {
  public:
   PoseOptimizerTest()

@@ -79,10 +79,14 @@ void DepthFilter::stopThread()
   }
 }
 
+
+// 添加 frame 进来更新seeds
 void DepthFilter::addFrame(FramePtr frame)
 {
   if(thread_ != NULL)
   {
+    
+    // mapping要是作为一个独立的线程的话，那就把frame添加进一个队列中，等待
     {
       lock_t lock(frame_queue_mut_);
       if(frame_queue_.size() > 2)
@@ -96,6 +100,8 @@ void DepthFilter::addFrame(FramePtr frame)
     updateSeeds(frame);
 }
 
+
+// 添加新的keyframe 生成和这个keyframe绑定在一起的seeds
 void DepthFilter::addKeyframe(FramePtr frame, double depth_mean, double depth_min)
 {
   new_keyframe_min_depth_ = depth_min;
@@ -110,6 +116,9 @@ void DepthFilter::addKeyframe(FramePtr frame, double depth_mean, double depth_mi
   else
     initializeSeeds(frame);
 }
+
+
+// 提取新的特征点，初始化 seed
 
 void DepthFilter::initializeSeeds(FramePtr frame)
 {
@@ -166,6 +175,8 @@ void DepthFilter::reset()
     SVO_INFO_STREAM("DepthFilter: RESET.");
 }
 
+
+// 更行 seeds的线程
 void DepthFilter::updateSeedsLoop()
 {
   while(!boost::this_thread::interruption_requested())
@@ -188,6 +199,8 @@ void DepthFilter::updateSeedsLoop()
         frame_queue_.pop();
       }
     }
+    
+    // 若果只是普通的frame 更新已有的seed，如果还是 keyframe 则还要初始化新的seeds
     updateSeeds(frame);
     if(frame->isKeyframe())
       initializeSeeds(frame);
@@ -258,6 +271,8 @@ void DepthFilter::updateSeeds(FramePtr frame)
       // The feature detector should not initialize new seeds close to this location
       feature_detector_->setGridOccpuancy(matcher_.px_cur_);
     }
+    
+    // 判断 filter 是否收敛，收敛的话就创建一个新的candidate
 
     // if the seed has converged, we initialize a new candidate point and remove the seed
     if(sqrt(it->sigma2) < it->z_range/options_.seed_convergence_sigma2_thresh)

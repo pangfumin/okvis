@@ -48,7 +48,8 @@ FIND_PACKAGE(OpenCV REQUIRED)
 FIND_PACKAGE(Eigen REQUIRED)
 FIND_PACKAGE(Sophus REQUIRED)
 FIND_PACKAGE(fast REQUIRED)
-FIND_PACKAGE(Boost REQUIRED COMPONENTS thread system)
+FIND_PACKAGE(Boost COMPONENTS filesystem system thread REQUIRED)
+
 
 
 FIND_PACKAGE(vikit_common REQUIRED)
@@ -86,7 +87,10 @@ LIST(APPEND SOURCEFILES
   src/feature_detection.cpp
   src/depth_filter.cpp
   src/config.cpp
-  src/sparse_img_align.cpp)
+  src/sparse_img_align.cpp
+  src/PangolinDSOViewer.cpp
+ 
+)
 
 # Add g2o if available
 IF(HAVE_G2O)
@@ -113,20 +117,36 @@ TARGET_LINK_LIBRARIES(svo
   ${G2O_SOLVER_PCG} ${G2O_TYPES_SBA} cholmod cxsparse
   ${vikit_common_LIBRARIES}
   okvis_util
-  #okvis_kinematics
-  #okvis_time
-  #okvis_cv 
-  #okvis_common
-  #okvis_ceres
-  #okvis_timing
-  #okvis_matcher
-  #okvis_frontend 
-  #okvis_multisensor_processing
+  okvis_kinematics
+  okvis_time
+  okvis_cv 
+  okvis_common
+  okvis_ceres
+  okvis_timing
+  okvis_matcher
+  okvis_frontend 
+  okvis_multisensor_processing
+)
+
+
+ADD_EXECUTABLE(main src/main.cpp)
+TARGET_LINK_LIBRARIES(main 
+  svo
+  okvis_util
+  okvis_kinematics
+  okvis_time
+  okvis_cv 
+  okvis_common
+  okvis_ceres
+  okvis_timing
+  okvis_matcher
+  okvis_frontend 
+  okvis_multisensor_processing
 )
 
 ################################################################################
 # TESTS
-
+if (0)
 ADD_EXECUTABLE(test_feature_align test/test_feature_alignment.cpp)
 TARGET_LINK_LIBRARIES(test_feature_align svo)
 
@@ -147,3 +167,5 @@ TARGET_LINK_LIBRARIES(test_sparse_img_align svo)
 
 ADD_EXECUTABLE(test_pose_optimizer test/test_pose_optimizer.cpp)
 TARGET_LINK_LIBRARIES(test_pose_optimizer svo) 
+
+endif()

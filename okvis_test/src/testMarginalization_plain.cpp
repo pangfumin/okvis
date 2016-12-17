@@ -57,7 +57,7 @@
 void testMarginalization_plain(){
   // initialize random number generator
   //srand((unsigned int) time(0)); // disabled: make unit tests deterministic...
-
+  
   // set up a random geometry
   std::cout << "set up a random geometry... " << std::flush;
   okvis::kinematics::Transformation T_WS0;  // world to sensor
@@ -111,12 +111,12 @@ void testMarginalization_plain(){
   residualBlockIds.push_back(id);
 
   // add a prior to the poses
-  //std::shared_ptr< ::ceres::CostFunction> pose0_prior_cost(new okvis::ceres::PoseError(T_WS0, 1e-4, 1e-4));
-  //id = map.addResidualBlock(pose0_prior_cost, NULL,poseParameterBlock0_ptr);
-  //residualBlockIds.push_back(id);
-  //std::shared_ptr< ::ceres::CostFunction> pose1_prior_cost(new okvis::ceres::PoseError(T_WS1, 1e-4, 1e-4));
-  //id = map.addResidualBlock(pose1_prior_cost, NULL,poseParameterBlock1_ptr);
-  //residualBlockIds.push_back(id);
+  std::shared_ptr< ::ceres::CostFunction> pose0_prior_cost(new okvis::ceres::PoseError(T_WS0, 1e-4, 1e-4));
+  id = map.addResidualBlock(pose0_prior_cost, NULL,poseParameterBlock0_ptr);
+  residualBlockIds.push_back(id);
+  std::shared_ptr< ::ceres::CostFunction> pose1_prior_cost(new okvis::ceres::PoseError(T_WS1, 1e-4, 1e-4));
+  id = map.addResidualBlock(pose1_prior_cost, NULL,poseParameterBlock1_ptr);
+  residualBlockIds.push_back(id);
 
   // get some random points and build error terms
   const size_t N = 100;

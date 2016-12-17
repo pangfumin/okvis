@@ -48,7 +48,8 @@ FIND_PACKAGE(OpenCV REQUIRED)
 FIND_PACKAGE(Eigen REQUIRED)
 FIND_PACKAGE(Sophus REQUIRED)
 FIND_PACKAGE(fast REQUIRED)
-FIND_PACKAGE(Boost REQUIRED COMPONENTS thread system)
+FIND_PACKAGE(Boost COMPONENTS filesystem system thread REQUIRED)
+
 
 
 FIND_PACKAGE(vikit_common REQUIRED)
@@ -87,7 +88,9 @@ LIST(APPEND SOURCEFILES
   src/depth_filter.cpp
   src/config.cpp
   src/sparse_img_align.cpp
-  src/PangolinDSOViewer.cpp)
+  src/PangolinDSOViewer.cpp
+ 
+)
 
 # Add g2o if available
 IF(HAVE_G2O)
@@ -143,7 +146,7 @@ TARGET_LINK_LIBRARIES(main
 
 ################################################################################
 # TESTS
-if (0)
+if (1)
 ADD_EXECUTABLE(test_feature_align test/test_feature_alignment.cpp)
 TARGET_LINK_LIBRARIES(test_feature_align svo)
 

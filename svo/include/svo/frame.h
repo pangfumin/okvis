@@ -49,6 +49,8 @@ public:
   Sophus::SE3                   T_f_w_;                 //!< Transform (f)rame from (w)orld.
   Matrix<double, 6, 6>          Cov_;                   //!< Covariance.
   ImgPyr                        img_pyr_;               //!< Image Pyramid.
+  
+  // 包含可以看到的feature
   Features                      fts_;                   //!< List of features in the image.
   vector<Feature*>              key_pts_;               //!< Five features and associated 3D points which are used to detect if two frames have overlapping field of view.
   bool                          is_keyframe_;           //!< Was this frames selected as keyframe?
@@ -67,6 +69,8 @@ public:
   /// Add a feature to the image
   void addFeature(Feature* ftr);
 
+  
+  // 用来快速检索 overlapping view
   /// The KeyPoints are those five features which are closest to the 4 image corners
   /// and to the center and which have a 3D point assigned. These points are used
   /// to quickly check whether two frames have overlapping field of view.
