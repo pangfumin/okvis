@@ -75,6 +75,7 @@ INCLUDE_DIRECTORIES(${vikit_common_INCLUDE_DIRS})
 # Set sourcefiles
 LIST(APPEND SOURCEFILES
   #src/frame_handler_mono.cpp
+  src/threadStereoImuVio.cpp
   src/frame_handler_base.cpp
   src/frame.cpp
   src/point.cpp
@@ -108,7 +109,7 @@ IF(HAVE_G2O)
 ENDIF(HAVE_G2O)
 
 # Create svo library
-ADD_LIBRARY(svo SHARED ${SOURCEFILES})
+ADD_LIBRARY(svo  ${SOURCEFILES})
 TARGET_LINK_LIBRARIES(svo 
   ${OpenCV_LIBS}
   ${Sophus_LIBRARIES}
@@ -134,23 +135,35 @@ TARGET_LINK_LIBRARIES(svo
 
 ################################################################################
 # TESTS
-if (1)
+if (0)
 
 
-ADD_EXECUTABLE(main src/main.cpp)
-TARGET_LINK_LIBRARIES(main 
-  svo
-  okvis_util
-  okvis_kinematics
-  okvis_time
-  okvis_cv 
-  okvis_common
-  okvis_ceres
-  okvis_timing
-  okvis_matcher
-  okvis_frontend 
-  okvis_multisensor_processing
-)
+
+
+ FIND_PACKAGE(Boost COMPONENTS filesystem system thread REQUIRED)
+  include_directories(${Boost_INCLUDE_DIRS})
+  # require Pangolin to visualization
+  find_package(Pangolin REQUIRED)
+  include_directories(${Pangolin_INCLUDE_DIRS})
+  ADD_EXECUTABLE(main src/main.cpp)
+  TARGET_LINK_LIBRARIES(main 
+    svo
+    okvis_util
+    okvis_kinematics
+    okvis_time
+    okvis_cv 
+    okvis_common
+    okvis_ceres
+    okvis_timing
+    okvis_matcher
+    okvis_frontend 
+    okvis_multisensor_processing
+    pthread 
+    ${Boost_LIBRARIES}
+    ${Pangolin_LIBRARIES}
+  )
+
+
 
 
 

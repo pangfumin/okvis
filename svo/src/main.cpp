@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
@@ -14,11 +13,13 @@
 #include <opencv2/opencv.hpp>
 #pragma GCC diagnostic pop
 #include <okvis/VioParametersReader.hpp>
-#include <okvis/ThreadedKFVio.hpp>
+#include <svo/threadStereoImuVio.hpp>
 #include <okvis/pangolinViewer.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
-#include <svo/PangolinDSOViewer.h>
+
+#include <vikit/abstract_camera.h>
+#include <vikit/pinhole_camera.h>
 
 // this is just a workbench. most of the stuff here will go into the Frontend class.
 int main(int argc, char **argv)
@@ -40,13 +41,37 @@ int main(int argc, char **argv)
 
   // read configuration file
   std::string configFilename(argv[1]);
-  
-  
-  PangolinDSOViewer viewer(640,480);
+
   okvis::VioParametersReader vio_parameters_reader(configFilename);
   okvis::VioParameters parameters;
   vio_parameters_reader.getParameters(parameters);
+  std::vector<okvis::CameraCalibration,Eigen::aligned_allocator<okvis::CameraCalibration>> calibrations;
+  vio_parameters_reader.getCameraCalibration(calibrations);
+  
+  okvis::CameraCalibration cali = calibrations.at(0);
+   
 
+  vk::AbstractCamera* cam =  new vk::PinholeCamera(cali.imageDimension[0], cali.imageDimension[1], 
+				cali.focalLength[0], cali.focalLength[1], 
+				cali.principalPoint[0], cali.principalPoint[1],
+				 cali.distortionCoefficients[0],
+				 cali.distortionCoefficients[1],
+				 cali.distortionCoefficients[2],
+				 cali.distortionCoefficients[3]);
+  
+  
+
+  okvis::ThreadedKFVio okvis_estimator(parameters,cam);
+
+ 
+  // set a pangolin viewer
+  okvis::pangolinViewer* viewer = new okvis::pangolinViewer();
+  okvis_estimator.setPangolinViewer(viewer);
+  
+  boost::thread viewThread(&okvis::pangolinViewer::Run,viewer);
+ 
+               
+  okvis_estimator.setBlocking(true);
 
   // the folder path
   std::string path(argv[2]);
@@ -110,7 +135,9 @@ int main(int argc, char **argv)
   int counter = 0;
   okvis::Time start(0.0);
   while (true) {
-   
+    okvis_estimator.display();
+   //poseViewer.display();
+
     // check if at the end
     for (size_t i = 0; i < numCameras; ++i) {
       if (cam_iterators[i] == image_names[i].end()) {
@@ -176,8 +203,8 @@ int main(int argc, char **argv)
       
       // add the IMU measurement for (blocking) processing
       if (t_imu - start + okvis::Duration(1.0) > deltaT) {
-	
-	 std::cout<< "imu time "<<" "<< t<<std::endl;
+	okvis_estimator.addImuMeasurement(t_imu, acc, gyr);
+	//std::cout<< "IMU time "<< t_imu<<std::endl;
       }
 
     } while (t_imu <= t);
@@ -186,8 +213,8 @@ int main(int argc, char **argv)
     if (t - start > deltaT) {
      // okvis_estimator.addImage(t, i, filtered);
     // okvis_estimator.addImage(t, i, filtered);
-      
-      std::cout<< "image time "<<" "<< t<<std::endl;
+      okvis_estimator.addStereo(t,filtered0,filtered1);
+      //std::cout<< "image time "<<" "<< t<<std::endl;
     }
 
     cam_iterators[0]++;
@@ -207,4 +234,3 @@ int main(int argc, char **argv)
   std::cout << std::endl << std::flush;
   return 0;
 }
-

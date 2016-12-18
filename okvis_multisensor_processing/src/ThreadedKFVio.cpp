@@ -457,8 +457,8 @@ void ThreadedKFVio::stereoConsumerLoop() {
     }
 
     // -- get relevant imu messages for new state
-    okvis::Time imuDataEndTime = multiFrame->timestamp()
-        + temporal_imu_data_overlap;
+    // 取出的imu 多于量帧图像之间的个数，分别向左右延伸一阵图像的间隔
+    okvis::Time imuDataEndTime = multiFrame->timestamp() + temporal_imu_data_overlap;
     okvis::Time imuDataBeginTime = lastTimestamp - temporal_imu_data_overlap;
 
     OKVIS_ASSERT_TRUE_DBG(Exception,imuDataBeginTime < imuDataEndTime,"imu data end time is smaller than begin time.");
