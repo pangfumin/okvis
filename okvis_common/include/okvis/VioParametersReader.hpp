@@ -53,6 +53,18 @@
 
 /// \brief okvis Main namespace of this package.
 namespace okvis {
+  
+  /// @brief Struct that contains all the camera calibration information.
+  struct CameraCalibration {
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    okvis::kinematics::Transformation T_SC;   ///< Transformation from camera to sensor (IMU) frame.
+    Eigen::Vector2d imageDimension;           ///< Image dimension. [pixels]
+    Eigen::VectorXd distortionCoefficients;   ///< Distortion Coefficients.
+    Eigen::Vector2d focalLength;              ///< Focal length.
+    Eigen::Vector2d principalPoint;           ///< Principal point.
+    std::string distortionType;               ///< Distortion type. ('radialtangential' 'plumb_bob' 'equdistant')
+  };
+  
 
 /**
  * @brief This class reads and parses config file.
@@ -61,6 +73,10 @@ class VioParametersReader{
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
+  
+  
+
+  
 
   /// \brief The default constructor.
   VioParametersReader();
@@ -92,6 +108,14 @@ class VioParametersReader{
       parameters = vioParameters_;
     return readConfigFile_;
   }
+  
+  bool getCameraCalibration(std::vector<CameraCalibration,
+		     Eigen::aligned_allocator<CameraCalibration>>& calibrations) const{
+    if(readConfigFile_)
+      calibrations = calibrations_;
+    return readConfigFile_;
+  }
+  
 
   /// Directly interface with driver without ROS message passing.
   bool useDriver;
@@ -100,21 +124,13 @@ class VioParametersReader{
 
  protected:
 
-  /// @brief Struct that contains all the camera calibration information.
-  struct CameraCalibration {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    okvis::kinematics::Transformation T_SC;   ///< Transformation from camera to sensor (IMU) frame.
-    Eigen::Vector2d imageDimension;           ///< Image dimension. [pixels]
-    Eigen::VectorXd distortionCoefficients;   ///< Distortion Coefficients.
-    Eigen::Vector2d focalLength;              ///< Focal length.
-    Eigen::Vector2d principalPoint;           ///< Principal point.
-    std::string distortionType;               ///< Distortion type. ('radialtangential' 'plumb_bob' 'equdistant')
-  };
-
+  
   /// If readConfigFile() has been called at least once this is true
   bool readConfigFile_;
   /// The parameters.
   okvis::VioParameters vioParameters_;
+  
+  std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> calibrations_;
 
   /**
    * @brief Parses booleans from a cv::FileNode. OpenCV sadly has no implementation like this.

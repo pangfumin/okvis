@@ -234,6 +234,8 @@ bool Frontend::dataAssociationAndInitialization(
   } else
     *asKeyframe = true;  // first frame needs to be keyframe
 
+    
+  // 匹配左右帧 创建新的 landmark
   // do stereo match to get new landmarks
   TimerSwitchable matchStereoTimer("2.4.3 matchStereo");
   switch (distortionType) {

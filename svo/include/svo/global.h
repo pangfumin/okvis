@@ -89,7 +89,9 @@ namespace svo
 #endif
 
   class Frame;
+  class stereoFrame;
   typedef boost::shared_ptr<Frame> FramePtr;
+  typedef boost::shared_ptr<stereoFrame> stereoFramePtr;
 } // namespace svo
 
 #endif // SVO_GLOBAL_H_

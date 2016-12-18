@@ -921,10 +921,7 @@ void ThreadedKFVio::publisherLoop() {
     if (fullStateCallback_ && !result.onlyPublishLandmarks){
       
       fullStateCallback_(result.stamp, result.T_WS, result.speedAndBiases,
-                         result.omega_S);
-      
-   
-       
+                         result.omega_S);    
     }
     
     if (viewer_ != nullptr && !result.onlyPublishLandmarks)

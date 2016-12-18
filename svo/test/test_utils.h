@@ -1,18 +1,3 @@
-// This file is part of SVO - Semi-direct Visual Odometry.
-//
-// Copyright (C) 2014 Christian Forster <forster at ifi dot uzh dot ch>
-// (Robotics and Perception Group, University of Zurich, Switzerland).
-//
-// SVO is free software: you can redistribute it and/or modify it under the
-// terms of the GNU General Public License as published by the Free Software
-// Foundation, either version 3 of the License, or any later version.
-//
-// SVO is distributed in the hope that it will be useful, but WITHOUT ANY
-// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-// FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef TEST_UTILS_H_
 #define TEST_UTILS_H_
@@ -23,6 +8,9 @@
 # include <ros/package.h>
 # include <vikit/params_helper.h>
 #endif
+#include <boost/filesystem.hpp>
+#include <opencv2/opencv.hpp>
+
 
 namespace svo {
 namespace test_utils {
@@ -50,6 +38,56 @@ std::string getTraceDir()
 #endif
 }
 
+
+int getImageNameList(std::string path,std::vector < std::vector < std::string >> &image_names)
+{
+  int num_camera_images = 0;
+  size_t numCameras = 2;
+ 
+  for (size_t i = 0; i < numCameras; ++i) {
+    num_camera_images = 0;
+    std::string folder(path + "/cam" + std::to_string(i) + "/data");
+
+    for (auto it = boost::filesystem::directory_iterator(folder);
+        it != boost::filesystem::directory_iterator(); it++) {
+      if (!boost::filesystem::is_directory(it->path())) {  //we eliminate directories
+        num_camera_images++;
+        image_names.at(i).push_back(it->path().filename().string());
+      } else {
+        continue;
+      }
+    }
+
+    if (num_camera_images == 0) {   
+      return 1;
+    }
+
+   
+    std::sort(image_names.at(i).begin(), image_names.at(i).end());
+  }
+  return num_camera_images;
+}
+
+
+bool getNthStereoImages(unsigned int nth,std::string path,
+			std::vector < std::vector < std::string >> &image_names,
+			cv::Mat &image0, cv::Mat &image1 )
+{
+  
+  if (nth > image_names.at(0).size())
+    return false;
+   image0 = cv::imread(
+	path + "/cam" + std::to_string(0) + "/data/" + image_names.at(0).at(nth),
+	cv::IMREAD_GRAYSCALE);
+    
+   image1 = cv::imread(
+      path + "/cam" + std::to_string(1) + "/data/" + image_names.at(1).at(nth),
+      cv::IMREAD_GRAYSCALE);
+     
+   return true;
+}
+			
+  
 } // namespace test_utils
 } // namespace svo
 

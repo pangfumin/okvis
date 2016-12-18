@@ -46,9 +46,11 @@ public:
   int                           id_;                    //!< Unique id of the frame.
   double                        timestamp_;             //!< Timestamp of when the image was recorded.
   vk::AbstractCamera*           cam_;                   //!< Camera model.
+  vk::AbstractCamera*           right_cam_;        
   Sophus::SE3                   T_f_w_;                 //!< Transform (f)rame from (w)orld.
   Matrix<double, 6, 6>          Cov_;                   //!< Covariance.
   ImgPyr                        img_pyr_;               //!< Image Pyramid.
+  cv::Mat                       right_img_;
   
   // 包含可以看到的feature
   Features                      fts_;                   //!< List of features in the image.
@@ -57,7 +59,7 @@ public:
   g2oFrameSE3*                  v_kf_;                  //!< Temporary pointer to the g2o node object of the keyframe.
   int                           last_published_ts_;     //!< Timestamp of last publishing.
 
-  Frame(vk::AbstractCamera* cam, const cv::Mat& img, double timestamp);
+  Frame(vk::AbstractCamera* cam,vk::AbstractCamera* right_cam, const cv::Mat& img,const cv::Mat& right_img, double timestamp);
   ~Frame();
 
   /// Initialize new frame and create image pyramid.

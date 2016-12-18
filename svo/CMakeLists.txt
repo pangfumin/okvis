@@ -74,7 +74,7 @@ INCLUDE_DIRECTORIES(${vikit_common_INCLUDE_DIRS})
 
 # Set sourcefiles
 LIST(APPEND SOURCEFILES
-  src/frame_handler_mono.cpp
+  #src/frame_handler_mono.cpp
   src/frame_handler_base.cpp
   src/frame.cpp
   src/point.cpp
@@ -88,6 +88,7 @@ LIST(APPEND SOURCEFILES
   src/depth_filter.cpp
   src/config.cpp
   src/sparse_img_align.cpp
+  src/ORBextractor.cc
   src/PangolinDSOViewer.cpp
  
 )
@@ -126,7 +127,14 @@ TARGET_LINK_LIBRARIES(svo
   okvis_matcher
   okvis_frontend 
   okvis_multisensor_processing
+  ${Pangolin_LIBRARIES}
+
 )
+
+
+################################################################################
+# TESTS
+if (0)
 
 
 ADD_EXECUTABLE(main src/main.cpp)
@@ -144,9 +152,11 @@ TARGET_LINK_LIBRARIES(main
   okvis_multisensor_processing
 )
 
-################################################################################
-# TESTS
-if (1)
+
+
+ADD_EXECUTABLE(test_stereo_match test/test_stereo_match.cpp  test/test_utils.h)
+TARGET_LINK_LIBRARIES(test_stereo_match svo)
+
 ADD_EXECUTABLE(test_feature_align test/test_feature_alignment.cpp)
 TARGET_LINK_LIBRARIES(test_feature_align svo)
 

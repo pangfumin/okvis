@@ -462,6 +462,8 @@ void VioParametersReader::readConfigFile(const std::string& filename) {
   vioParameters_.imu.a0 = Eigen::Vector3d((double) (imu_params["a0"][0]),
                                           (double) (imu_params["a0"][1]),
                                           (double) (imu_params["a0"][2]));
+  
+  calibrations_ = calibrations;
 
   readConfigFile_ = true;
 }
