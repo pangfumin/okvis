@@ -157,17 +157,10 @@ bool ThreadedKFVio::addStereo(const okvis::Time & stamp,
   stereoframe->timeStamp = stamp;
  
 
-  if (keypoints0 != nullptr) {
-    stereoframe->measurement.deliversKeypoints0 = true;
-    stereoframe->measurement.keypoints0 = *keypoints0;
-    
-    stereoframe->measurement.deliversKeypoints1 = true;
-    stereoframe->measurement.keypoints1 = *keypoints1;
-    
-  } else {
-    stereoframe->measurement.deliversKeypoints0 = false;
-    stereoframe->measurement.deliversKeypoints1 = false;
-  }
+
+  stereoframe->measurement.deliversKeypoints0 = false;
+  stereoframe->measurement.deliversKeypoints1 = false;
+
 
   if (blocking_) {
   
