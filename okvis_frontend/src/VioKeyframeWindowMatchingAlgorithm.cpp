@@ -359,6 +359,7 @@ size_t VioKeyframeWindowMatchingAlgorithm<CAMERA_GEOMETRY_T>::numUncertainMatche
 
 // At the end of the matching step, this function is called once
 // for each pair of matches discovered.
+// 匹配完成后 还会 使用 addLandmark 添加新的
 template<class CAMERA_GEOMETRY_T>
 void VioKeyframeWindowMatchingAlgorithm<CAMERA_GEOMETRY_T>::setBestMatch(
     size_t indexA, size_t indexB, double /*distance*/) {

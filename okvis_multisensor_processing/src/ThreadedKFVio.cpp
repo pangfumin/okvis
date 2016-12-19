@@ -464,8 +464,7 @@ void ThreadedKFVio::stereoConsumerLoop() {
     OKVIS_ASSERT_TRUE_DBG(Exception,imuDataBeginTime < imuDataEndTime,"imu data end time is smaller than begin time.");
 
     // wait until all relevant imu messages have arrived and check for termination request
-    if (imuFrameSynchronizer_.waitForUpToDateImuData(
-      okvis::Time(imuDataEndTime)) == false)  {
+    if (imuFrameSynchronizer_.waitForUpToDateImuData(okvis::Time(imuDataEndTime)) == false)  {
       return;
     }
     OKVIS_ASSERT_TRUE_DBG(Exception,
@@ -507,7 +506,7 @@ void ThreadedKFVio::stereoConsumerLoop() {
       }
     } else {
       // get old T_WS
-    
+      // 通过积分imu reading 获得新图像位置的初始化 估计
       okvis::ceres::ImuError::propagation(imuData, parameters_.imu, T_WS,
                                           speedAndBiases, lastTimestamp,
                                           multiFrame->timestamp());
@@ -524,6 +523,7 @@ void ThreadedKFVio::stereoConsumerLoop() {
     okvis::kinematics::Transformation T_WC1 = T_WS
         * (*parameters_.nCameraSystem.T_SC(1));
    
+    // 提取特征点 把特征点 放进 multiFrame中	
     frontend_.detectAndDescribe(1, multiFrame, T_WC1, nullptr);
    
   
@@ -536,6 +536,12 @@ void ThreadedKFVio::stereoConsumerLoop() {
 
 
 // Loop that matches frames with existing frames.
+/*
+ * 前段的核心部分，包括：
+ * 3D-2D的match
+ * 左右量帧图像的 match
+ * 三角化 新的landmark
+ */
 void ThreadedKFVio::matchingLoop() {
   
   for (;;) {
@@ -550,8 +556,7 @@ void ThreadedKFVio::matchingLoop() {
    
     // -- get relevant imu messages for new state
     okvis::Time imuDataEndTime = frame->timestamp() + temporal_imu_data_overlap;
-    okvis::Time imuDataBeginTime = lastAddedStateTimestamp_
-        - temporal_imu_data_overlap;
+    okvis::Time imuDataBeginTime = lastAddedStateTimestamp_ - temporal_imu_data_overlap;
 
     OKVIS_ASSERT_TRUE_DBG(Exception,imuDataBeginTime < imuDataEndTime,
         "imu data end time is smaller than begin time." <<
@@ -559,8 +564,7 @@ void ThreadedKFVio::matchingLoop() {
         "last timestamp         " << lastAddedStateTimestamp_ << " (id: " << estimator_.currentFrameId());
 
     // wait until all relevant imu messages have arrived and check for termination request
-    if (imuFrameSynchronizer_.waitForUpToDateImuData(
-        okvis::Time(imuDataEndTime)) == false)
+    if (imuFrameSynchronizer_.waitForUpToDateImuData(okvis::Time(imuDataEndTime)) == false)
       return; OKVIS_ASSERT_TRUE_DBG(Exception,
         imuDataEndTime < imuMeasurements_.back().timeStamp,
         "Waiting for up to date imu data seems to have failed!");
@@ -578,11 +582,15 @@ void ThreadedKFVio::matchingLoop() {
     // TODO If we didn't actually 'pop' the _matchedFrames queue until after optimization this would not be necessary
     {
       
+      
+      //等待 优化 完毕
       std::unique_lock<std::mutex> l(estimator_mutex_);
       while (!optimizationDone_)
         optimizationNotification_.wait(l);
      
     
+      
+       // 想后端添加优化的节点， 但此时不包含 landmark
       okvis::Time t0Matching = okvis::Time::now();
       bool asKeyframe = false;
       if (estimator_.addStates(frame, imuData, asKeyframe)) {

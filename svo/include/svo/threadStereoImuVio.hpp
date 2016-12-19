@@ -28,6 +28,7 @@
 #include <svo/frame_handler_base.h>
 #include <svo/reprojector.h>
 #include <svo/initialization.h>
+#include <svo/ORBextractor.h>
 
 
 
@@ -69,7 +70,7 @@ class ThreadedKFVio  : public svo::FrameHandlerBase{
    * \param parameters Parameters and settings.
    */
  
-  ThreadedKFVio(okvis::VioParameters& parameters,vk::AbstractCamera* cam);
+  ThreadedKFVio(okvis::VioParameters& parameters,vk::AbstractCamera* cam,vk::AbstractCamera* right_cam);
 
 
   /// \brief Destructor. This calls Shutdown() for all threadsafe queues and joins all threads.
@@ -135,6 +136,7 @@ class ThreadedKFVio  : public svo::FrameHandlerBase{
  private:
    
   vk::AbstractCamera* cam_;                     //!< Camera model, can be ATAN, Pinhole or Ocam (see vikit).
+  vk::AbstractCamera* right_cam_;
   svo::Reprojector reprojector_;                     //!< Projects points from other keyframes into the current frame
   svo::FramePtr new_frame_;                          //!< Current frame.
   svo::FramePtr last_frame_;                         //!< Last frame, not necessarily a keyframe.
@@ -195,6 +197,8 @@ class ThreadedKFVio  : public svo::FrameHandlerBase{
     okvis::MapPointVector transferredLandmarks; ///< Vector of the landmarks that have been marginalized out.
     bool onlyPublishLandmarks;                  ///< Boolean to signalise the publisherLoop() that only the landmarks should be published
   };
+  
+  ORBextractor* pORBextractorLeft_, *pORBextractorRight_;
 
   /// @name State variables
   /// @{

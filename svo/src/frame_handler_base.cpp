@@ -92,8 +92,11 @@ bool FrameHandlerBase::startFrameProcessingCommon(const double timestamp)
     stage_ = STAGE_FIRST_FRAME;
   }
 
+  
+  /*
   if(stage_ == STAGE_PAUSED)
     return false;
+  */
 
   SVO_LOG(timestamp);
   SVO_DEBUG_STREAM("New Frame");

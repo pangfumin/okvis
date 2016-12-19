@@ -107,6 +107,8 @@ void Estimator::clearImus(){
 }
 
 // Add a pose to the state.
+
+// 添加 camera pose imu 外部参数 的状态
 bool Estimator::addStates(
     okvis::MultiFramePtr multiFrame,
     const okvis::ImuMeasurementDeque & imuMeasurements,
@@ -116,6 +118,8 @@ bool Estimator::addStates(
   // TODO !!
   okvis::kinematics::Transformation T_WS;
   okvis::SpeedAndBias speedAndBias;
+  
+  // 对于第一个图像， 使用 imu reading 给个初始化的值 
   if (statesMap_.empty()) {
     // in case this is the first frame ever, let's initialize the pose:
     bool success0 = initPoseFromImu(imuMeasurements, T_WS);
@@ -126,6 +130,8 @@ bool Estimator::addStates(
     speedAndBias.setZero();
     speedAndBias.segment<3>(6) = imuParametersVec_.at(0).a0;
   } else {
+    
+    // 对于之后的图像 使用imureading 估计状态
     // get the previous states
     uint64_t T_WS_id = statesMap_.rbegin()->second.id;
     uint64_t speedAndBias_id = statesMap_.rbegin()->second.sensors.at(SensorStates::Imu)
@@ -169,6 +175,8 @@ bool Estimator::addStates(
   states.global.at(GlobalStates::T_WS).exists = true;
   states.global.at(GlobalStates::T_WS).id = states.id;
 
+  
+  // 将 poseParamterblock 加入
   if(statesMap_.empty())
   {
     referencePoseId_ = states.id; // set this as reference pose
@@ -189,6 +197,9 @@ bool Estimator::addStates(
   std::map<uint64_t, States>::reverse_iterator lastElementIterator = statesMap_.rbegin();
   lastElementIterator++;
 
+  
+  
+  // 添加 外部参数 block
   // initialize new sensor states
   // cameras:
   for (size_t i = 0; i < extrinsicsEstimationParametersVec_.size(); ++i) {
@@ -217,6 +228,8 @@ bool Estimator::addStates(
     statesMap_.rbegin()->second.sensors.at(SensorStates::Camera).push_back(cameraInfos);
     states.sensors.at(SensorStates::Camera).push_back(cameraInfos);
   }
+  
+  // 添加 speedAndBias block
 
   // IMU states are automatically propagated.
   for (size_t i=0; i<imuParametersVec_.size(); ++i){

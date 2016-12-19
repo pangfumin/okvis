@@ -562,6 +562,8 @@ void Frontend::matchStereo(okvis::Estimator& estimator,
 
   // TODO: no RANSAC ?
 
+  
+  // 添加新的 landmark  
   for (size_t im = 0; im < camNumber; im++) {
     const size_t ksize = multiFrame->numKeypoints(im);
     for (size_t k = 0; k < ksize; ++k) {

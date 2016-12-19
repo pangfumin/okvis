@@ -22,6 +22,8 @@
 #include <vikit/abstract_camera.h>
 #include <boost/noncopyable.hpp>
 #include <svo/global.h>
+#include <okvis/kinematics/Transformation.hpp>
+#include <okvis/Measurements.hpp>
 
 namespace g2o {
 class VertexSE3Expmap;
@@ -51,6 +53,10 @@ public:
   Matrix<double, 6, 6>          Cov_;                   //!< Covariance.
   ImgPyr                        img_pyr_;               //!< Image Pyramid.
   cv::Mat                       right_img_;
+  
+  okvis::kinematics::Transformation T_WS;     ///< The pose.
+  okvis::SpeedAndBias speedAndBiases;         ///< The speeds and biases.
+    
   
   // 包含可以看到的feature
   Features                      fts_;                   //!< List of features in the image.

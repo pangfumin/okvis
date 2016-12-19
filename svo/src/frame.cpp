@@ -34,8 +34,8 @@ Frame::Frame(vk::AbstractCamera* cam,vk::AbstractCamera* right_cam, const cv::Ma
     timestamp_(timestamp),
     cam_(cam),
     right_cam_(right_cam),
-    right_img_(right_img),
-    key_pts_(5),
+    right_img_(right_img.clone()),
+    key_pts_(5), // 挑选 5 个
     is_keyframe_(false),
     v_kf_(NULL)
 {

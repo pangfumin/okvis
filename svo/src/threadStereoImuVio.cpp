@@ -30,9 +30,10 @@ static const okvis::Duration temporal_imu_data_overlap(0.02);  // overlap of imu
 
 
 // Constructor.
-ThreadedKFVio::ThreadedKFVio(okvis::VioParameters& parameters,vk::AbstractCamera* cam)
+ThreadedKFVio::ThreadedKFVio(okvis::VioParameters& parameters,vk::AbstractCamera* cam,vk::AbstractCamera* right_cam)
     : FrameHandlerBase(),
       cam_(cam),
+      right_cam_(right_cam),
       reprojector_(cam_, map_),
       depth_filter_(NULL),
       speedAndBiases_propagated_(okvis::SpeedAndBias::Zero()),
@@ -50,6 +51,8 @@ ThreadedKFVio::ThreadedKFVio(okvis::VioParameters& parameters,vk::AbstractCamera
 	
   setBlocking(false);
   init();
+  
+  //std::cout<<cam_->height()<<" "<<cam_->width()<<std::endl;
   
   
 }
@@ -73,6 +76,19 @@ void ThreadedKFVio::init() {
       new svo::feature_detection::FastDetector(
           cam_->width(), cam_->height(), svo::Config::gridSize(), svo::Config::nPyrLevels()));
 
+   
+  
+  // ORB extrator uesd for detect initial feature
+   int nFeatures = 1200;
+   float fScaleFactor = 1.2;
+   int nLevels = 8;
+   int fIniThFAST = 20;
+   int fMinThFAST = 7;
+
+   pORBextractorLeft_ = new ORBextractor(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+   pORBextractorRight_ = new ORBextractor(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+
+    
   
   svo::DepthFilter::callback_t depth_filter_cb = boost::bind(
       &svo::MapPointCandidates::newCandidatePoint, &map_.point_candidates_, _1, _2);
@@ -95,9 +111,7 @@ void ThreadedKFVio::init() {
 void ThreadedKFVio::startThreads() {
 
   // consumer threads
- 
-  stereoConsumerThread_ = std::thread(&ThreadedKFVio::stereoConsumerLoop, this);
-  
+  stereoConsumerThread_ = std::thread(&ThreadedKFVio::stereoConsumerLoop, this); 
   imuConsumerThread_ = std::thread(&ThreadedKFVio::imuConsumerLoop, this);
   
   //visualizationThread_  = std::thread(&ThreadedKFVio::visualizationLoop, this);
@@ -120,6 +134,9 @@ ThreadedKFVio::~ThreadedKFVio() {
  
   stereoConsumerThread_.join();
   imuConsumerThread_.join();
+  
+  delete pORBextractorLeft_;
+  delete pORBextractorRight_;
   
   //visualizationThread_.join();
  
@@ -223,9 +240,18 @@ void ThreadedKFVio::stereoConsumerLoop() {
       return;
     }
     
-    
     okvis::Time frame_stamp = stereoframe->timeStamp;
+    
+    if(!startFrameProcessingCommon(frame_stamp.toSec()))
+    return;
+    
+    
+   
     //std::cout<<stereoframe->timeStamp<<std::endl;
+    new_frame_.reset(new svo::Frame(cam_,right_cam_, 
+				    stereoframe->measurement.image0.clone(), 
+				    stereoframe->measurement.image1.clone(),
+				    frame_stamp.toSec()));
     multiFrame = std::shared_ptr<okvis::MultiFrame>(new okvis::MultiFrame(parameters_.nCameraSystem,frame_stamp,
                                                                           okvis::IdProvider::instance().newId()));
     multiFrame->setImage(0,stereoframe->measurement.image0);
@@ -278,11 +304,6 @@ void ThreadedKFVio::stereoConsumerLoop() {
     
     lastOptimizedStateTimestamp_ = multiFrame->timestamp();
     
-    
-    
-    
-
-   
   }
 }
 

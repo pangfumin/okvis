@@ -20,6 +20,7 @@
 
 #include <vikit/abstract_camera.h>
 #include <vikit/pinhole_camera.h>
+#include <svo/convert.h>
 
 // this is just a workbench. most of the stuff here will go into the Frontend class.
 int main(int argc, char **argv)
@@ -49,19 +50,16 @@ int main(int argc, char **argv)
   vio_parameters_reader.getCameraCalibration(calibrations);
   
   okvis::CameraCalibration cali = calibrations.at(0);
+  okvis::CameraCalibration right_cali = calibrations.at(1);
    
-
-  vk::AbstractCamera* cam =  new vk::PinholeCamera(cali.imageDimension[0], cali.imageDimension[1], 
-				cali.focalLength[0], cali.focalLength[1], 
-				cali.principalPoint[0], cali.principalPoint[1],
-				 cali.distortionCoefficients[0],
-				 cali.distortionCoefficients[1],
-				 cali.distortionCoefficients[2],
-				 cali.distortionCoefficients[3]);
+ 
+  
+  vk::PinholeCamera cam =  Convert::calib2pinholeCam( cali);
+  vk::PinholeCamera right_cam =  Convert::calib2pinholeCam( right_cali);
   
   
 
-  okvis::ThreadedKFVio okvis_estimator(parameters,cam);
+  okvis::ThreadedKFVio okvis_estimator(parameters,&cam,&right_cam);
 
  
   // set a pangolin viewer
