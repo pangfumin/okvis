@@ -426,6 +426,8 @@ void VioKeyframeWindowMatchingAlgorithm<CAMERA_GEOMETRY_T>::setBestMatch(
         }
       }
     }
+    
+    // 添加 新的 路标点
     // add landmark to graph if necessary
     if (insertHomogeneousPointParameterBlock) {
       estimator_->addLandmark(lmId, T_WCa_ * hP_Ca);

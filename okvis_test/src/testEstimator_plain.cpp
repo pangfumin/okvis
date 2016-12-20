@@ -161,6 +161,8 @@ void testEstimator_plain(){
       for (double z = -10.0; z <= 10.0; z += 0.5) {
         homogeneousPoints.push_back(Eigen::Vector4d(3.0, y, z, 1));
         lmIds.push_back(okvis::IdProvider::instance().newId());
+	
+	// 把landmark加到map中
         estimator.addLandmark(lmIds.back(), homogeneousPoints.back());
       }
     }
@@ -209,6 +211,8 @@ void testEstimator_plain(){
       // now let's add also landmark observations
       std::vector<cv::KeyPoint> keypoints;
       for (size_t j = 0; j < homogeneousPoints.size(); ++j) {
+	
+	// 每一个相机加进去
         for (size_t i = 0; i < mf->numFrames(); ++i) {
           Eigen::Vector2d projection;
           Eigen::Vector4d point_C = mf->T_SC(i)->inverse()
