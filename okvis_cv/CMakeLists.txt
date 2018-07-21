@@ -9,7 +9,7 @@ include_directories(${EIGEN_INCLUDE_DIR})
 # require OpenCV
 find_package( OpenCV COMPONENTS core highgui imgproc features2d REQUIRED )
 include_directories(BEFORE ${OpenCV_INCLUDE_DIRS}) 
-
+message(STATUS "Opencv path '${OpenCV_INCLUDE_DIRS}'")
 # build the library
 add_library(${PROJECT_NAME} STATIC 
   src/CameraBase.cpp

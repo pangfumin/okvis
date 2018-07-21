@@ -9,15 +9,20 @@ set(OKVIS_VERSION
   ${OKVIS_MAJOR_VERSION}.${OKVIS_MINOR_VERSION}.${OKVIS_PATCH_VERSION})
 
 # options for build configuration
+# options for build configuration
 option (USE_SYSTEM_BRISK
-        "Use brisk via find_package rather than downloading it as part of okvis" OFF) 
-option (USE_SYSTEM_CERES
-        "Use ceres via find_package rather than downloading it as part of okvis" OFF) 
+        "Use brisk via find_package rather than downloading it as part of okvis" ON) 
+option (USE_LOCAL_CERES
+        "Use ceres via find_package rather than downloading it as part of okvis" OFF)
+option (HAS_BUILD_OPENGV
+        "Use opengv via find_package rather than downloading it as part of okvis" ON) 
+
 option (BUILD_APPS
         "Builds a demo app (which requires boost)" ON) 
+
 option (BUILD_TESTS
         "Builds all gtests" OFF) 
-SET(N_CORES 3 CACHE STRING "Using N number of cores for parallel build")
+SET(N_CORES 4 CACHE STRING "Using N number of cores for parallel build")
 
 # Offer the user the choice of overriding the installation directories
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
@@ -40,6 +45,9 @@ foreach(p LIB BIN INCLUDE CMAKE)
   endif()
 endforeach()
 
+
+set (CMAKE_BUILD_TYPE Release)
+
 # make sure we use Release and warn otherwise
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to 'Release' as none was specified.")
@@ -53,6 +61,7 @@ if (NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Release")
 else()
   message(STATUS "Building with build type '${CMAKE_BUILD_TYPE}'")
 endif()
+
 
 if(APPLE)
   # The clang compiler (on osx) is somehow much more strict
@@ -98,7 +107,7 @@ else()
   message(STATUS "libvisensor not found")
 endif()
 
-
+#set(OpenCV_DIR /home/pang/software/opencv2413_install/share/OpenCV)
 
 # glog
 find_package(Glog REQUIRED)
@@ -139,16 +148,16 @@ endif()
 # ceres
 find_package(SuiteSparse REQUIRED QUIET) #will be needed in any case...
 find_package(CXSparse QUIET) #optional
-if(${USE_SYSTEM_CERES})
+if(${USE_LOCAL_CERES})
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
   find_package( Ceres 1.9 REQUIRED )
   include_directories(BEFORE ${CERES_INCLUDE_DIRS})
-  message(STATUS "Using system Ceres.")
+  message(STATUS "Using local Ceres.")
 else()
   set(CERES_VERSION 1.9.0)
   set(CERES_TAG 7c57de5080c9f5a4f067e2d20b5f33bad5b1ade6) #version 1.9. Newer ones would need adaptation with ceres::ParameterBlock
   ExternalProject_Add(ceres_external
-    GIT_REPOSITORY https://ceres-solver.googlesource.com/ceres-solver
+    GIT_REPOSITORY https://github.com/ceres-solver/ceres-solver
     GIT_TAG ${CERES_TAG}
     UPDATE_COMMAND ""
     INSTALL_DIR ${CMAKE_BINARY_DIR}
@@ -208,40 +217,10 @@ else()
 endif()
 
 # OpenGV
-set(CMAKE_CXX_FLAGS_WSUPPRESS 
-      "${CMAKE_CXX_FLAGS} -Wno-unused-parameter -Wno-maybe-uninitialized -Wno-sign-compare -Wno-unused-but-set-variable -Wno-unused-variable -Wno-pedantic")
-message(STATUS "NOTE: Suppressing some warnings when compiling OpenGV.")
-ExternalProject_Add(opengv_external
-    GIT_REPOSITORY https://github.com/laurentkneip/opengv
-    GIT_TAG cc32b16281aa6eab67cb28a61cf87a2a5c2b0961
-    UPDATE_COMMAND ""
-    PATCH_COMMAND # forcing static libs
-        COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/cmake/opengv/CMakeLists.txt ${CMAKE_CURRENT_BINARY_DIR}/opengv/src/opengv/CMakeLists.txt
-        COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/cmake/opengv/opengvConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/opengv/src/opengv/opengvConfig.cmake.in
-        COMMENT "Forcing our own CMakeLists.txt to build OpenGV (static library support)."
-    CMAKE_ARGS 
-      -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR> 
-      -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE} 
-      -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS_WSUPPRESS} # suppress warnings...
-    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/opengv
-    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/opengv/src/opengv
-    INSTALL_DIR ${CMAKE_BINARY_DIR}
-    BUILD_IN_SOURCE 0
-    BUILD_COMMAND make -j${N_CORES}
-    INSTALL_COMMAND make install
-)
-add_library(opengv STATIC IMPORTED)
-set(OpenGV_LIBRARIES opengv)
-set_target_properties(opengv PROPERTIES IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib/libopengv.a)
-add_dependencies(${OpenGV_LIBRARIES} opengv_external)
-
-# install it once built
-install(FILES ${CMAKE_BINARY_DIR}/lib/libopengv.a 
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
-install(DIRECTORY ${CMAKE_BINARY_DIR}/include/opengv/ 
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/opengv/)
-install(DIRECTORY ${CMAKE_BINARY_DIR}/lib/CMake/opengv/
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/CMake/opengv/)
+if(${HAS_BUILD_OPENGV})  # using absolute path
+SET(OpenGV_INCLUDE_DIRS $ENV{HOME}/software/okvis/3rdlib_install/include)
+SET(OpenGV_LIBRARIES $ENV{HOME}/software/okvis/3rdlib_install/lib/libopengv.a)
+endif()
 
 if(${BUILD_TESTS})
   # gmock
@@ -295,7 +274,7 @@ add_subdirectory(okvis_common)
 
 include_directories(okvis_ceres/include)
 add_subdirectory(okvis_ceres)
-add_dependencies(okvis_ceres ceres okvis_util)
+add_dependencies(okvis_ceres  okvis_util)
 
 include_directories(okvis_timing/include)
 add_subdirectory(okvis_timing)
@@ -306,7 +285,11 @@ add_dependencies(okvis_matcher okvis_util)
 
 include_directories(okvis_frontend/include)
 add_subdirectory(okvis_frontend)
+if(HAS_BUILD_OPENGV)
+add_dependencies(okvis_frontend  okvis_util)
+else()
 add_dependencies(okvis_frontend opengv okvis_util)
+endif()
 
 include_directories(okvis_multisensor_processing/include)
 add_subdirectory(okvis_multisensor_processing)
@@ -314,6 +297,11 @@ add_dependencies(okvis_multisensor_processing okvis_util)
 
 # also build the apps
 if(BUILD_APPS)
+ find_package( OpenCV COMPONENTS core highgui imgproc features2d REQUIRED )
+ include_directories(BEFORE ${OpenCV_INCLUDE_DIRS}) 
+
+  message(STATUS "Opencv path '${OpenCV_INCLUDE_DIRS}'")
+
   FIND_PACKAGE(Boost COMPONENTS filesystem system REQUIRED)
   include_directories(${Boost_INCLUDE_DIRS}) 
   add_executable(okvis_app_synchronous okvis_apps/src/okvis_app_synchronous.cpp)
@@ -329,6 +317,7 @@ if(BUILD_APPS)
     okvis_frontend 
     okvis_multisensor_processing
     pthread 
+    ${OpenCV_LIBRARIES} 
     ${Boost_LIBRARIES}
   )
   if(${VISENSORDRIVER_FOUND})

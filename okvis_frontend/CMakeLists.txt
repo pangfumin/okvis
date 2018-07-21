@@ -8,7 +8,7 @@ endif()
 
 # require Eigen
 find_package( Eigen REQUIRED )
-include_directories(${EIGEN_INCLUDE_DIR}) 
+include_directories(${EIGEN_INCLUDE_DIR} ${OpenGV_INCLUDE_DIRS}) 
 
 # build the library
 add_library(${PROJECT_NAME} 

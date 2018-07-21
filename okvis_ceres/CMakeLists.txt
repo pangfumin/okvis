@@ -3,7 +3,7 @@ project(okvis_ceres)
 
 # require Eigen
 find_package( Eigen REQUIRED )
-include_directories(${EIGEN_INCLUDE_DIR}) 
+include_directories(${EIGEN_INCLUDE_DIR} )
                
 # build the library 
 add_library(${PROJECT_NAME} 
